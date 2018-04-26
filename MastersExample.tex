@@ -9,15 +9,19 @@
 %% \documentclass[MACS,english,a4paper,oneside,12pt]{ntnuthesis/ntnuthesis}
 
 %% with the change to using DAIM we have a new option. include DAIM after english below removes the front page material so that you can then submit in the DAIM system. If you are wanting the front material remove DAIM and make sure you fill in the DaimData.tex file.
-\documentclass[MACS,english]{ntnuthesis/ntnuthesis}
+\documentclass[MIS,english]{ntnuthesis/ntnuthesis}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}     % For utf8 encoded .tex files allows norwegian characters in the files. This can be dangerous if you change to a differnt editor.
 %\usepackage[pdftex]{graphicx, hyperref}   % For cross references in pdf
 \usepackage{graphicx}
 \usepackage{hyperref}   % For cross references in pdf
+%\usepackage{cite}
 
-
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage{color}              % For colouring text 
 \hypersetup{colorlinks=true,     
 		linkcolor=blue,          % color of internal links (change box color with linkbordercolor)
@@ -30,7 +34,9 @@
 \usepackage{booktabs}
 \usepackage{gnuplottex} %miktex option if using miktex on windows
 \usepackage{rotating}
-
+\usepackage{cleveref}
+\usepackage[]{algorithm2e}
+\usepackage{algorithm}
 
 \definecolor{darkgreen}{rgb}{0,0.5,0}
 \definecolor{darkred}{rgb}{0.5,0.0,0}
@@ -83,7 +89,7 @@
 \ifthenelse{\boolean{HarvardCitations}}{%
 	\usepackage{natbib} % for Harvard names as citations.
 }{%
-	\usepackage[numbers]{natbib} % for Vancover numbers in bibliography
+	\usepackage[numbers, sort]{natbib} % for Vancover numbers in bibliography
 }
 
 \newcommand{\q}[1]{\leavevmode\marginpar{\small\em #1}}
@@ -106,9 +112,9 @@
 
 
 \include{inc/introduction} % includes latex files from the same directory
-\include{inc/packages} % could be called Methodology or methods or any filename 
-\include{inc/structure} % could be results
-\include{inc/implementation}
+\include{inc/relatedwork} % could be called Methodology or methods or any filename 
+\include{inc/proposed} % could be results
+\include{inc/analysis}
 \include{inc/discussion}
 \include{inc/conclusion}
 

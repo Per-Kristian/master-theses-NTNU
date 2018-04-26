@@ -1,26 +1,92 @@
 \chapter{Introduction}
 \label{chap:introduction}
-\q{What is the purpose of this document?}
-The purpose of the current document is to provide an example of using the thesis template and a description on how to use \LaTeX. There are instructions that relate specifically to the template, and some which are generally useful for \LaTeX. 
+\section{Topic covered by the project}
+\label{sec:topic}
+When a person attempts to access certain resources or systems, they may need to verify that they are in fact authorized to do so, often through an authentication mechanism.
+Authentication is the act of verifying that the current user matches the identity they are claiming ownership of.
+After claiming an identity, for example by providing a username, the current user may support their claim by presenting something only the true owner of the identity is supposed to \textit{know} or \textit{have}.
+This could for example be a password or a token such as a key card.
+The user may also give a representation of what they \textit{are}, which bring us to the topic of \textit{biometrics}.
 
-\q{Where is the structure defined } 
-The detailed typographical rules have been implemented in the
-\texttt{ntnuthesis} \LaTeX\ document class, in the file 
+Biometric systems measure human characteristics to determine the identity of users.
+While biological biometrics is now widely embedded in our everyday lives such as fingerprint scanning and lately face recognition in our smart phones, we can also be identified by the way we behave, i.e. by means of \textit{behavioral biometrics}.
+Voice and signature recognition are examples of behavioral biometrics, however the topic of this project revolves around \textit{keystroke dynamics} which involves measuring a user's typing patterns on a keyboard.
+Every individual has their own way of typing on computer keyboards, and this can be taken advantage of by authenticating users by measuring for example the pressure or timings of keypresses, of which the latter will be our focus.
+Examples of such timings can be the time of when keys are pressed or released. 
 
-This was updated by Simon McCallum.
-The package has changed names and version number it is now called
-\texttt{ntnuthesis}
-v\ntnuthesisversion\ as of \ntnuthesisdate.
+Authentication can be used both for giving access (\textit{static authentication}) and removing access (\textit{dynamic authentication}).
+When a user claims an identity and writes the correct password, the biometric system can compare the typing pattern in the written password to the way the true owner of the identity writes the same password.
+If the patterns match, the user will be given access.
+This is an example of static authentication using \textit{fixed-text} keystroke dynamics.
 
-\q{what is a thesis about}
-For many of you, this Master's thesis will be the most advanced academic document you ever write.  It needs to demonstrate both academic ability and clear thinking. You Master's should show that you are ready to lead other people, reflect more deeply, and have a professional attitude to your work and environment. 
+Keystroke dynamics can also be used for dynamic authentication.
+Even after a user is logged into a given system using \textit{static authentication}, they can continue being authenticated by a background process after the initial log-in, removing their access if they are believed to be an imposter.
+Dynamic authentication based on keystroke dynamics can be done by two different methods: \textit{periodic} or \textit{continuous authentication}.
+With periodic authentication (PA), the system collects keystroke timing information over a period of time, and retroactively analyzes the collected data.
+It will then analyze the statistical properties derived from the data, decide if they fit the properties of the genuine user and remove access if they do not fit.
+Systems with continuous authentication (CA) will check if the user is genuine after each keystroke action they perform.
 
-\q{who cares}
-When writing the thesis it is important to know who you are writing for. The target audience for this document is in layers:
+Authors of PA systems generally refer to their systems as \textit{continuous authentication}, however we will in this project refer to them as \textit{periodic authentication}. 
+The reason for this is that the word "continuous" implies checks being performed after every action, while PA systems require a greater number of actions before the check is initiated.
+The distinction between CA and PA was described by Dowland et al. in 2002 \cite{Dowland2002}, and Bours \cite{BOURS201236} described a similar but more specific distinction in his CA study in 2012.
+
+A great benefit to CA is that the system can make a decision every time the user presses a key, whereas impostors have time to perform a certain amount of potentially harmful keystroke actions in-between identity verifications in PA systems.
+On the other hand, CA systems can not take advantage of statistical analysis like PA systems can.
+Therefore, we would like to investigate if extending an existing CA system with a PA system can remove the inherent disadvantages of both types of systems as well as significantly improve the performance of the CA system.
+
+\section{Keywords}
+Behavioral biometrics; keystroke dynamics; continuous authentication; periodic authentication; distance-based classification; machine learning
+
+\section{Problem description}
+While many systems and applications rely on static authentication, such as log-in processes, most systems do not perform further authentication to ensure that the current user has not changed since logging in.
+Physically leaving an unlocked computer unattended is not an uncommon practice in many work environments, which opens up for free and unauthorized access by anyone willing to seize the opportunity.
+The longer the genuine user is absent, the more time unauthorized users have to access information or cause damage to any part of the system.
+Restricting the amount of actions intruders can perform is therefore needed in order to reduce the damage potential.
+
+To the best of our knowledge, there has been no research conducted on combining CA and PA for keystroke dynamics.
+Because of this, the drawbacks of both types of systems are present in literature.
+As stated earlier, a disadvantage to PA systems is that there is a window of time where an imposter can use the system before the next identity verification is performed.
+Most of the existing PA systems need several hundreds to over one thousand keystrokes for every periodic authentication.
+This leaves the imposter with too much freedom before their access is removed.
+
+The main problem with CA systems is that they need to base their decisions on a very small amount of information about the current user's typing pattern.
+Every action is continuously classified as an imposter action or a genuine action. 
+That means that CA systems are not able to rely on statistics from the current user's typing pattern.
+
+CA and PA systems share another common problem, being that they can make errors.
+More specifically, they may wrongfully believe that the genuine user is an imposter, or they may mistake an imposter for being the genuine user.
+In real-time implementations of such systems, the first case would lead to access being removed from the genuine user, which would be a source of irritation or frustration.
+The second case would give an imposter time to perform more keystrokes before (hopefully) having their access removed at a later point.
+
+Both systems take a certain amount of time to detect imposters.
+While PA systems generally need a fixed amount of recorded keystrokes before analyzing them, CA systems remove access when they no longer trust the genuineness of the user.
+Every keystroke increases or decreases the CA system's trust level, and the more similar the current user's typing pattern is to that of the genuine user, the longer they are allowed to remain logged in. 
+Therefore, an important problem to solve is to decrease the number of keystrokes imposters are allowed to perform before having their access removed, while also allowing genuine users to perform as many keystrokes as possible before being wrongfully locked out.
+
+\section{Justification, motivation and benefits}
+
+By achieving positive results, this project has the potential to increase the viability of free-text keystroke dynamics in industries and sectors where a higher level of information security is needed or desired, such as the health sector or other critical infrastructures.
+This does not exclude other work environments or even private computers, as any owner of a system where security is essential could benefit from imposters being automatically detected and locked out by typing on the keyboard.
+As improving the CA system's detection performance would lead to imposters being detected more quickly while genuine users are locked out less frequently, it would result in a higher level of security and a better user experience.
+
+\section{Research questions}
+\label{research:questions}
+In this project, we will aim to answer the following research question:
+\begin{itemize}
+    \item \textit{Can incorporating periodic authentication methods into a continuous authentication system using keystroke dynamics significantly improve the original system's imposter detection performance?}
+\end{itemize}
+To be able to answer this research question, a number of sub-questions should also be considered.
+They can be addressed in any order, as answering one of them does not depend on already having answered the others.
+The sub-questions are as follows:
 \begin{enumerate}
-    \item The marking committee
-    \item Your supervisor
-    \item Other students at the same level 
-    \item Professionals \& Academics
-    \item The general public.
+\item \textit{Which PA system can lead to the best results in terms of detection performance when incorporated into the CA system?} Here we want to know which PA system causes the combined system to catch the most imposters, and how fast it does so. We also want it to mistake genuine users for being imposters as rarely as possible.
+\item \textit{What is the impact on computational performance when incorporating a PA system into the CA system?} Continuous and periodic authentication systems are meant to operate transparently in the background. Therefore, we want every authentication process to be performed quickly in order to avoid slowing down the user's machine.
+\item \textit{How can the decision of the PA system be used by the CA system?} If the PA system believes the current user is an imposter, it can either remove access immediately or cause the CA system to place less trust in the user. We want to know which approach gives the best results.
+
 \end{enumerate}
+
+\section{Planned contributions}
+The indented contribution of this project is to implement a previously proposed CA system \cite{mondal} and extend it with a PA system with the aim of improving its detection performance.
+When implemented, the imposter detection performance of both the CA system and the combined CA/PA system will be analyzed, and the results will be presented.
+Furthermore, we will present an analysis of how the CA system's computational performance is affected by the PA extension. 
+We hope to propose a CA system that can react after every keystroke action while also utilizing statistics derived from larger keystroke samples in order to make more accurate decisions.
