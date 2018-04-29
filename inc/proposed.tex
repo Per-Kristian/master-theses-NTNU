@@ -71,8 +71,8 @@ We also use \textit{dissimilarity scores} instead of \textit{similarity scores}.
 Still, the general architecture remains similar, and is depicted in \Cref{fig:CA-diagram}.
 Features are extracted from the raw keystroke data in the dataset.
 The training portion of the dataset is used to build the user's reference. 
-The users' testing data is compared against their own and other users' references by the Keystroke Matching Module.
-From these comparisons, matching scores are produced, and are used as input for the Dynamic Trust Model (DTM), as described in \Cref{sec:related-CA}.
+The users' testing data is compared against their own and other users' references by the Keystroke Comparison Module.
+From these comparisons, comparison scores are produced, and are used as input for the Dynamic Trust Model (DTM), as described in \Cref{sec:related-CA}.
 Based on the new trust level produced by the DTM, the Decision Module decides whether the current user should be allowed to continue or be locked out.
 The following subsections describe the CA system's architecture, as well as our implementation.
 
@@ -89,7 +89,7 @@ The following subsections describe the CA system's architecture, as well as our 
 Six features are utilized in the CA system, namely keycodes, monograph durations as well as PP, PR, RP and RR latencies from digraphs.
 While certain systems in literature exclude monographs in their analysis, we found it necessary to consider them in our system.
 If monographs were ignored, an attacker could wait for 1500 ms between keystrokes in order to avoid typing digraphs.
-This would result in the system having little to no features available for matching, even if the user typed a full block of monographs.
+This would result in the system having little to no features available for comparison, even if the user typed a full block of monographs.
 Including monographs features helps mitigate this security issue.
 
 \begin{table}[h]
@@ -98,6 +98,7 @@ Including monographs features helps mitigate this security issue.
 \hline
 Monograph & Digraph\\ \hline
 - Keycode & - Keycode\\
+- Hit count & - Hit count\\
 - $\text{Duration}_{\text{Mean}, \sigma} $& - $\text{PP}_{\text{Mean}, \sigma}$\\
 & - $\text{PR}_{\text{Mean}, \sigma}$  \\
 & - $\text{RP}_{\text{Mean}, \sigma}$ \\
@@ -105,11 +106,12 @@ Monograph & Digraph\\ \hline
 \\ \hline
 \end{tabular}
 
-\caption{The structure of the references used in our system. $\sigma$ is the standard deviation of recorded durations/latencies.}
-\label{tab:reference-structure}
+\caption{The structure of the references used in our system, where $\sigma$ is the standard deviation of recorded durations/latencies.}
+\label{tab:CA-reference-structure}
 \end{table}
-\Cref{tab:reference-structure} shows how these features are used in the reference.
-For every feature occurring during enrollment, the system only stores the \textit{mean} and \textit{standard deviation} of the feature's recorded timing values.
+\Cref{tab:CA-reference-structure} shows how these features are used in the reference.
+For every n-graph occurring during enrollment, the system only stores the \textit{mean} and \textit{standard deviation} of the feature's recorded timing values, as well as its keycode and hit count.
+The hit count keeps track of how many times each mono- or digraph occurred in enrollment.
 All features are extracted as described in \Cref{sec:system-design-dataset}.
 %Keycodes can also be considered a feature, but since all comparisons rely on identical keycodes, we will consider the durations and latencies.
 
@@ -125,9 +127,9 @@ In other words, if a key were pressed only once and its duration were an outlier
 However, if the key had several occurrences, and therefore several durations, outlier durations would be removed if present.
 
 
-\subsection{Matching}
+\subsection{Comparison}
 \label{sec:system-design-CA-matching}
-When processing a keystroke, its extracted features are handled by the Keystroke Matching Module which compares them to the genuine user's reference using a distance measure.
+When processing a keystroke, its extracted features are handled by the Keystroke Comparison Module which compares them to the genuine user's reference using a distance measure.
 The comparison is performed by computing the dissimilarity score $sc$ between the probe timing features $p$ and the mean duration $\mu$ of the corresponding features from the same keycode in the reference.
 This is calculated using the following formula:
 $$ sc=\frac{1}{n}\sum_{i=1}^{n}\frac{|p_i-\mu_i|}{\sigma_i} $$
@@ -167,7 +169,7 @@ This was a necessary feature due to having a dissimilarity score as input.
  Trust_i = \text{min}\{\text{max}\{Trust_{i-1} + \Delta_T(sc_i), 0\}, 100\}
  \end{equation}
  }
- \caption{Algorithm for Trust Model}
+ \caption{Algorithm for the Trust Model}
 \label{alg:trust-model}
 \end{algorithm}
 
@@ -208,16 +210,89 @@ The reason for not including this feature is threefold:
     \item Updating the user's reference several times when testing system performance would severely impact processing time for full test runs. 
     This would in turn impact the amount of different parameter sets we would be able to test in the project's analysis phase.
     Therefore, we chose to prioritize testing as many sets of parameters as possible over including this feature.
-    In a real-time system, the extra computational overhead would be trivial due to larger time periods between each update.
+    In a real-time system, the extra computational work would be trivial due to larger time periods between each update.
 \end{itemize}
-The following subsections further describe our implementation of the PA system.
 
-\subsections{Feature extraction and references}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/PA-diagram.pdf}
+    \caption{Generalized diagram of the PA system's structure.}
+    \label{fig:PA-diagram}
+\end{figure}
+
+The PA system is displayed in \Cref{fig:PA-diagram}.
+Its structure is similar to that of the CA system, though the PA system has no Trust Module. 
+Also, a block of keystroke features is fed as input to the Keystroke Comparison Module, as opposed to one keystroke at a time in the CA system.
+The following subsections further describe the different components of the PA system.
+
+\subsection{Feature extraction and references}
 We have used the same reference for our PA system as described in \Cref{sec:system-design-CA-ref}, however, a different set of features is considered.
-Ferreira and Santos \cite{superResults} consider monograph durations, digraph PP and RP, trigraph PP and 4-graph PP latencies.
-In order to lessen computational effort, as well as 
+Ferreira and Santos \cite{superResults} consider monograph durations, digraph PP and RP latencies, as well as PP latencies for trigraphs and tetragraphs (4-graphs).
+In order to soften computational impact, trigraphs and tetragraphs were excluded from our system.
+This left us with the features listed in \Cref{tab:PA-reference-structure}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Monograph & Digraph\\ \hline
+- Keycode & - Keycode\\
+- Hit count & - Hit count\\
+- $\text{Duration}_{\text{Mean}} $& - $\text{PP}_{\text{Mean}}$\\
+& - $\text{RP}_{\text{Mean}}$ \\
+\hline
+\end{tabular}
+
+\caption{The structure of the references used in our PA system.}
+\label{tab:PA-reference-structure}
+\end{table}
+
+\subsection{Comparison}
+\todo{Explain the term "n-graph", possibly also mono and digraph.}
+The Comparison Module uses the R and A measures presented by Gunetti and Picardi \cite{gnp}, which have been adopted by several other authors, including Ferreira and Santos \cite{superResults}.
+These two measures are calculated for every sample, and are combined to produce a final distance.
+Following is a description of how these measures are produced in our system.
+
+After the current user has typed an amount of keystrokes equal to the block length used by the system, the features in \Cref{tab:PA-reference-structure} are extracted from the block sample to form a probe.
+The Keystroke Comparison Module then finds all n-graphs that are shared between the probe and the genuine user's reference.
+The shared n-graphs are separated into one set for monographs and one set for digraphs which are processed individually.
+
+\todo{Correct "R measure" to "R-distance" throughout.}
+To calculate the R (relative) distance of a probe, the shared monographs and digraphs are extracted into probe and reference feature vectors sorted by durations and latencies, respectively.
+For every feature vector (monograph durations, digraph PP and digraph RP), the position of each n-graph in the probe is compared to the same n-graph's position in the reference vector.
+This results in a \textit{position distance} being produces for each n-graph.
+The R measure is then calculated by summing the position distances of all n-graphs per feature vector, and normalizing the result.
+The normalization allows us to compare and combine R measures calculated from feature vectors of different lengths. This is useful as there may be more digraphs shared than monographs, or vice versa.
+The normalization is performed by dividing the summed position distances by the maximum possible disorder in an array of the same length as the respective feature vector.
+
+\begin{table}[h]
+\centering
+    \includegraphics[width=0.6\textwidth]{figures/R-measure.pdf}
+    \caption{Calculation of the relative distance between the digraphs of the word "authentication" which are shared between the probe and reference \cite{gnp}.}
+    \label{fig:R-measure}
+\end{table}
+
+An example of R-distance calculation for PP latencies is shown in \Cref{fig:R-measure}, where the current user has typed the word "authentication". The example is based on that of the R and A measures' original authors \cite{gnp}.
+Five of the digraphs from the probe were found in the reference, and so the shared digraphs are sorted by their latencies.
+The digraphs' summed position distances is $2 + 0 + 2 + 3 + 1 = 8$.
+With there being five digraphs shared between the probe and reference, the maximum order of the feature vector is $(5^2 - 1)/2 = 12$.
+Thus, the R distance is $8/12 = 0.666$.
+In our PA system, the same procedure would be performed for monograph durations and RP latencies as well.
+
+\todo{Explain how R distances are combined.}
+
+
+
+
+
+
+
+
+
+
 
 \section{Combined system}
+
 
 
 %\subsection{Outliers}
