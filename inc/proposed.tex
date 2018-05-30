@@ -4,7 +4,8 @@
 %Notes:\\
 %remember to mention difference in calculating similar n-graphs in absolute distance. Not using 1.
 
-This chapter describes the individual systems we have developed, as well as the architecture of the combined system. 
+This chapter describes the individual systems we have developed, as well as the architecture of the combined system.
+\Cref{sec:system-design-dataset} describes the dataset we have used for testing system performances, while \Cref{sec:system-design_CA-system,sec:system-design-PA,sec:system-design-combined} presents the system architectures.
 
 
 \section{Dataset}
@@ -12,22 +13,22 @@ This chapter describes the individual systems we have developed, as well as the 
 Regarding separating every user's data for training, validation and testing, we followed the same approach as Mondal \cite{mondal}. 
 This means that up to 35\% of the keystrokes were used for training, 10\% were used for calculating certain user specific parameters, and the rest was used for testing.
 20000 keystrokes were used as a cutoff for the training set.
-Therefore, if a user's dataset contained a very high amount of keystrokes, the leftover keystrokes initially meant for training were used for testing instead.
+Therefore, if a user's dataset contained a large amount of keystrokes, the leftover keystrokes initially meant for training were used for testing instead.
 We have tested the performance of the individual systems with and without the cutoff, and the results can be seen in \Cref{sec:analysis-cutoff}.
-As the cutoff does not cause a significant loss of performance, we chose to keep it when combining the systems.
+%As the cutoff does not cause a significant loss of performance, we chose to keep it when combining the systems.
 
 \Cref{tab:proposed_dataset_example} shows an example of the dataset structure.
 Each row contains the keycode and duration of a pressed key, as well as the keycode of the next key and the RP-latency to that key.
-In the example, the RP latency of the digraph "Da" is a negative value, which is not uncommon.
-This means that the user was still holding down the "D"-key for 45 milliseconds after pressing the "a"-key.
-We can also see that the next key pressed after writing the word "Data" is the space key, however we cannot see its duration as the example does not include the next row.
+In the example, the RP latency of the digraph "da" is a negative value, which is not uncommon.
+This means that the user was still holding down the "d"-key for 45 milliseconds after pressing the "a"-key.
+We can also see that the next key pressed after writing the word "data" is the space key, however we cannot see its duration as the example does not include the next row.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{cccc}
 \hline
 Key & Duration & Next key & RP-latency \\ \hline
-D   & 176      & a        & -45\\
+d   & 176      & a        & -45\\
 a   & 120      & t        & 16 \\
 t   & 221      & a        & 80 \\ 
 a   & 137      & |space|  & 102\\ \hline
@@ -36,13 +37,13 @@ a   & 137      & |space|  & 102\\ \hline
 \label{tab:proposed_dataset_example}
 \end{table}
 
-Using the values in the dataset, we can achieve any and all of the four latencies described in \Cref{chap:related}.
+Using the values in the dataset, we can achieve any and all of the four latencies described in \Cref{chap:related} by means of summing durations and/or latencies.
 Following are the latencies for the digraph "Da".
 \begin{itemize}
-    \item \textbf{PP}: 176 ms + (-45) ms = \textit{131 ms}
-    \item \textbf{PR}: 176 ms + (-45) ms + 120 ms = \textit{251 ms}
+    \item \textbf{PP}: 176 ms duration + (-45) ms RP-latency = \textit{131 ms}
+    \item \textbf{PR}: 176 ms duration + (-45) ms RP-latency + 120 ms duration = \textit{251 ms}
     \item \textbf{RP}: = \textit{-45 ms}
-    \item \textbf{RR}: -45 + 120 = \textit{75 ms}
+    \item \textbf{RR}: -45 ms RP-latency + 120 ms duration = \textit{75 ms}
 \end{itemize}
 These latencies, along with the monograph durations, could then be stored in the reference or used for validation/testing, depending on the example's location in the user dataset.
 
@@ -53,8 +54,9 @@ Even if there were a meaningful relation, pausing in the middle of a word would 
 Therefore, we chose to only regard consecutive keystrokes as digraphs if their RP-latencies were less than 1500 ms.
 
 Another consideration was that the amount of unique digraphs greatly outnumbers the amount of unique monographs.
-Naturally, this means that user datasets tend to contain a large number of different digraphs, though they generally have a small amount of \textit{occurrences}.
+Naturally, this means that user datasets tend to contain a large number of different digraphs, though each digraphs generally have a small amount of \textit{occurrences}.
 With a small amount of occurrences, we can assume that the timing values of digraphs are more prone to represent a behavior that is not truly representative of the user.
+With larger user datasets, more occurrences can in general be registered per digraph.
 Therefore, a decision was made to exclude datasets consisting of less than 10000 keystrokes, in order to ensure more accurate measurements of the system's true performance.
 11 users were excluded, leaving us with 46 users whose keystroke data was used for analysis.
 The average number of recorded keystrokes from the remaining users was 43338.
@@ -65,7 +67,7 @@ These values were removed from the datasets.
 
 \section{CA system}
 \label{sec:system-design_CA-system}
-The developed CA system is based on the \textit{system architecture} proposed by Mondal \cite{mondal}, while our implementations are not identical.
+The developed CA system is based on the \textit{system architecture} proposed by Mondal \cite{mondal}, though our implementations are not identical.
 For instance, the classifiers are different. 
 We also use \textit{dissimilarity scores} instead of \textit{similarity scores}.
 Still, the general architecture remains similar, and is depicted in \Cref{fig:CA-diagram}.
@@ -73,6 +75,7 @@ Features are extracted from the raw keystroke data in the dataset.
 The training portion of the dataset is used to build the user's reference. 
 The users' testing data is compared against their own and other users' references by the Keystroke Comparison Module.
 From these comparisons, comparison scores are produced, and are used as input for the Dynamic Trust Model (DTM), as described in \Cref{sec:related-CA}.
+Another optional input for the DTM is a set of personal parameters, which can be calculated using the genuine user's validation data.
 Based on the new trust level produced by the DTM, the Decision Module decides whether the current user should be allowed to continue or be locked out.
 The following subsections describe the CA system's architecture, as well as our implementation.
 
@@ -110,26 +113,26 @@ Monograph & Digraph\\ \hline
 \label{tab:CA-reference-structure}
 \end{table}
 \Cref{tab:CA-reference-structure} shows how these features are used in the reference.
-For every n-graph occurring during enrollment, the system only stores the \textit{mean} and \textit{standard deviation} of the feature's recorded timing values, as well as its keycode and hit count.
+For every mono- or digraph occurring during enrollment, the system only stores the \textit{mean} and \textit{standard deviation} of their recorded timing values, as well as their keycode and hit count.
 The hit count keeps track of how many times each mono- or digraph occurred in enrollment.
 All features are extracted as described in \Cref{sec:system-design-dataset}.
 %Keycodes can also be considered a feature, but since all comparisons rely on identical keycodes, we will consider the durations and latencies.
 
-
 As human behavior is prone to inconsistencies, removing outlier values can give more accurate representations of how a user typically behaves.
 In PA systems, it is possible to remove outlier timing values from probe blocks, as each n-graph can have multiple recorded occurrences.
 This is generally not the case for CA systems, as the trust level must be adjusted after every recorded keystroke.
-However, it is possible to remove outliers from the CA reference.
-We chose to so since our classifier relies on standard deviation, which causes it to be negatively affected by outliers.
-For every feature in the reference, we removed outliers using Interquartile Range.
+However, it is possible to remove outliers while constructing the CA reference.
+We chose to do so since our classifier relies on standard deviation, which causes it to be negatively affected by outliers.
+For every feature in the reference, values more than 1.5 interquartile ranges (IQR) below the lower quartile or above the upper quartile were considered as outliers and removed.
 This was done within the scope of one feature. 
 In other words, if a key were pressed only once and its duration were an outlier compared to other keys in the reference, it would still not be removed.
 However, if the key had several occurrences, and therefore several durations, outlier durations would be removed if present.
+The system was also tested without removing outliers, and the results are discussed in \Cref{sec:analysis-CA-outliers}.
 
 
 \subsection{Comparison}
 \label{sec:system-design-CA-matching}
-When processing a keystroke, its extracted features are handled by the Keystroke Comparison Module which compares them to the genuine user's reference using a distance measure.
+When processing a keystroke during testing, its extracted features are handled by the Keystroke Comparison Module which compares them to the genuine user's reference using a distance measure.
 The comparison is performed by computing the dissimilarity score $sc$ between the probe timing features $p$ and the mean duration $\mu$ of the corresponding features from the same keycode in the reference.
 This is calculated using the following formula:
 $$ sc=\frac{1}{n}\sum_{i=1}^{n}\frac{|p_i-\mu_i|}{\sigma_i} $$
@@ -145,10 +148,11 @@ This distance metric shows the dissimilarity between the probe and reference, an
 
 
 \subsection{Trust model and decision module}
+\label{sec:CA-trust-and-decision}
 The trust model used in our system is a variant of the one presented by Mondal \cite{mondal}.
 We have made certain changes to make it fit our system, and eliminated one parameter which was not used in our analysis.
 \Cref{alg:trust-model} shows our implementation of the trust model.
-Perhaps the most notable change is the fact that the function is inverted horizontally, as seen in \Cref{fig:sigmoids}.
+Perhaps the most notable change is the fact that the sigmoid function is inverted horizontally, as seen in \Cref{fig:sigmoids}.
 This was a necessary feature due to having a dissimilarity score as input.
 
 \begin{algorithm}[htbp]
@@ -162,7 +166,7 @@ This was a necessary feature due to having a dissimilarity score as input.
  \KwResult{\\$Trust_i\to$ Trust level after $i^{th}$ action}
  \Begin{
  \begin{equation}
- \Delta_T(sc_i) = \text{min}\{-C + (\frac{C*2}{1 + \text{exp}(\frac{sc_i-A}{B})}), C\}
+ \Delta_T(sc_i) = \text{min}\{-C + (\frac{C\times2}{1 + \text{exp}(\frac{sc_i-A}{B})}), C\}
  \label{eq:delta-trust}
  \end{equation}
  \begin{equation}
@@ -175,14 +179,19 @@ This was a necessary feature due to having a dissimilarity score as input.
 
 \begin{figure}[!htbp]
   \begin{subfigure}[b]{0.5\textwidth}
-    \includegraphics[width=\textwidth, height= 0.3\textheight]{figures/sigmoid1.eps}
+    \includegraphics[width=\textwidth, height= 0.26\textheight]{figures/sigmoid1.eps}
     \label{fig:sigmoid1}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.5\textwidth}
-    \includegraphics[width=\textwidth, height=0.3\textheight]{figures/sigmoid3.eps}
+    \includegraphics[width=\textwidth, height=0.26\textheight]{figures/sigmoid3.eps}
     \label{fig:sigmoid2}
+  \end{subfigure}\\
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth, height=0.26\textheight]{figures/inflSig.eps}
+    \label{fig:sigmoid3}
   \end{subfigure}
+  
   \caption{Examples of how the score would affect the trust level using different parameters for \Cref{eq:delta-trust}.}
   \label{fig:sigmoids}
 \end{figure}
@@ -198,7 +207,24 @@ However, if the system locks the user out at that point, it disregards the fact 
 This issue is highlighted when the digraph score would have raised the trust level back to a value above $T_{\text{lockout}}$, for example $Trust_i = 90.2$.
 Therefore, when observing digraph actions, the Decision Module locks the user out only if $Trust_i < T_{\text{lockout}}$ after considering both the monograph \textit{and} digraph scores of the keystroke.
 
+As seen in \Cref{fig:CA-diagram}, the DTM can accept personal (user specific) parameters for the sigmoid function.
+In our analysis, we have tested the system both using global parameters as well as personalizing the threshold for reward or penalty, which is the "A" parameter in \Cref{alg:trust-model}.
+To adjust this threshold, the genuine user's validation set is used to find their average dissimilarity score against their own reference, before adding a \textit{tolerance level} to that average score.
+Outlier values are removed from the list of scores calculated from all the keystrokes in the validation set.
+This ensures that the average of the remaining values is more accurate compared to the user's regular behavior.
+%While the personal parameters could be optimiz
+%Personal parameters were tested by adjusting the "A" parameter seen in 
+This lets the system account for the fact that some users type more consistently than others.
+If a genuine user types less consistently, thus achieving higher dissimilarity scores from their validation set, their threshold will be higher in order to avoid being locked out too often.
+Consequently, imposters have a slightly higher chance of going undetected in such cases.
+We see this as a fair tradeoff, as \textit{acceptability} is very important for a biometric system to be viable, and being locked out on a regular basis is an annoyance to the genuine user.
+
+The tolerance level is a system level parameter.
+With higher tolerance levels, users are allowed to deviate more from the genuine user's expected behavior without being locked out.
+Lowering the tolerance level would cause the system to be more strict.
+
 \section{PA system}
+\label{sec:system-design-PA}
 The foundation of our PA system is based on that of Ferreira and Santos \cite{superResults}.
 Some of their features, such as "progressive learning" has been excluded from our implementation.
 When three consecutive probe blocks were accepted, their system would update the user's reference, infusing said probes into it in order to keep the reference up to date with the genuine user's most recent behavior.
@@ -230,7 +256,8 @@ We have used the same reference for our PA system as described in \Cref{sec:syst
 Ferreira and Santos \cite{superResults} consider monograph durations, digraph PP and RP latencies, as well as PP latencies for trigraphs and tetragraphs (4-graphs).
 In order to soften computational impact, trigraphs and tetragraphs were excluded from our system.
 This left us with the features listed in \Cref{tab:PA-reference-structure}.
-Probes are formed using the same structure.
+Probes are formed using the same structure, and since the PA system has significantly more data to base its decision on than the CA system, outlier values can be removed from the probe as well as the reference.
+Outlier removal is performed using IQR, as in the CA system.
 
 \begin{table}[h]
 \centering
@@ -249,36 +276,36 @@ Monograph & Digraph\\ \hline
 \end{table}
 
 \subsection{Comparison}
-\todo{Explain the term "n-graph", possibly also mono and digraph.}
-The Comparison Module uses the R and A measures presented by Gunetti and Picardi \cite{gnp}, which have been adopted by several other authors, including Ferreira and Santos \cite{superResults}.
-These two measures are calculated for every sample, and are combined to produce a final distance.
+\label{sec:system-design-PA-comparison}
+The Comparison Module uses the R- and A-distances presented by Gunetti and Picardi \cite{gnp}, which have been adopted by several other authors, including Ferreira and Santos \cite{superResults}.
+These two distances are calculated for every sample, and are \textit{summed} to produce a final distance.
 Following is a description of how these distances are produced in our system.
 
 \subsubsection{R-distance}
 
-After the current user has typed an amount of keystrokes equal to the block length used by the system, the features in \Cref{tab:PA-reference-structure} are extracted from the block sample to form a probe.
+After the current user has typed an amount of keystrokes equal to the block size used by the system, the features in \Cref{tab:PA-reference-structure} are extracted from the block sample to form a probe.
 The Keystroke Comparison Module then finds all n-graphs that are shared between the probe and the genuine user's reference.
 The shared n-graphs are separated into one set for monographs and one set for digraphs which are processed individually.
-\todo{Correct "R measure" to "R-distance" throughout.}
 To calculate the R (relative) distance of a probe, the shared monographs and digraphs are extracted into probe and reference feature vectors sorted by durations and latencies, respectively.
 For every feature vector (monograph durations, digraph PP and digraph RP), the position of each n-graph in the probe is compared to the same n-graph's position in the reference vector.
 This results in a \textit{position distance} being produced for each n-graph.
-The R measure is then calculated by summing the position distances of all n-graphs per feature vector, and normalizing the result.
-The normalization allows us to compare and combine R measures calculated from feature vectors of different lengths. This is useful as there may be more digraphs shared than monographs, or vice versa.
+The R-distance is then calculated by summing the position distances of all n-graphs per feature vector, and normalizing the result.
+The normalization allows us to compare and combine R-distances calculated from feature vectors of different lengths. 
+This is useful as the number of shared digraphs may be different from the number of shared monographs.
 The normalization is performed by dividing the summed position distances by the maximum possible disorder in an array of the same length as the respective feature vector.
 
 \begin{table}[h]
 \centering
     \includegraphics[width=0.6\textwidth]{figures/R-measure_OC.pdf}
-    \caption{Calculation of the relative distance between the digraphs of the word "authentication" which are shared between the probe and reference.}
-    \label{fig:R-measure}
+    \caption{Calculation of the relative distance between digraphs shared between a probe and reference.}
+    \label{tab:R-distance}
 \end{table}
 
-An example of R-distance calculation for PP latencies is shown in \Cref{fig:R-measure}. The example is based on that of the R and A measures' original authors \cite{gnp}.
+An example of R-distance calculation for PP latencies is shown in \Cref{tab:R-distance}. The example is based on that of the R- and A-distances' original authors \cite{gnp}.
 Five of the digraphs from the probe were found in the reference, and so the shared digraphs are sorted by their latencies.
 The digraphs' summed position distances is $1 + 3 + 0 + 3 + 1 = 8$.
 With there being five digraphs shared between the probe and reference, the maximum order of the feature vector is $(5^2 - 1)/2 = 12$.
-Thus, the R-distance is $8/12 = 0.666$.
+Thus, the R-distance is $8/12 = 0.66$.
 In our PA system, the same procedure would be performed for monograph durations and RP latencies as well.
 
 When an R-distance is produced for each of our three probe feature vectors, the distances are combined.
@@ -298,12 +325,16 @@ This division is performed to avoid an unfair weighing of digraphs, as digraphs 
 Where we have based our weighting on total number of durations/latencies per feature vector, the original authors use the \textit{number of shared n-graphs}.
 The reason for changing this, is that our dataset contains a large variety of behaviors, as the data was collected in an unconstrained environment.
 A consequence is that some participants were for example playing games during data collection.
-When playing these games, very few unique keys were pressed, though they were pressed rapidly over long periods of time.
-In the case where a block would consist mostly of only one character being pressed repetitively, which is a realistic situation with our dataset, only a few monographs other than the repeated key could heavily shift the weight in favor of monographs.
-A weighing like this could be detrimental, as a great amount of valuable information from the recorded digraphs of the repeated key would have only a small impact on the result.
+When playing these games, very few unique keys were pressed, though they were pressed rapidly over long periods of time. 
+This resulted in a high number of occurrences for a single unique digraph.
+
+In the case where a block would consist mostly of only one character being pressed repetitively, which is a realistic situation with our dataset, only a few unique monographs other than the repeated key could heavily shift the weight in favor of monographs if the user waited a couple of seconds before pressing those other keys.
+This would happen due to the system not recognizing consecutive keypresses with more than 1500 ms RP-latency as digraphs.
+Therefore, pressing those other keys would only increase the number of unique \textit{monographs} and not unique \textit{digraphs}.
+A weighting like this could be detrimental, as a great amount of valuable information from the recorded digraphs of the repeated key would have only a small impact on the result.
 
 On the other hand, a consequence of our weighting scheme is that monographs will always be prioritized over digraphs.
-With a block length of 100, the amount of available monographs would be 100, while there would be at most $100 - 1 = 99$ digraphs.
+With a block size of 100 keystrokes, the amount of available monographs would be 100, while there would be at most $100 - 1 = 99$ digraphs.
 Prioritizing monograph durations is supported by Pinto et al. \cite{Pinto2014}, who found that using the following weights produced the overall best results: 42\% for monograph durations, 24\% for digraph RP, 16\% digraph PP, 10\% trigraph PP and 8\% tetragraph PP latencies.
 However, their study was performed on a limited dataset of 10 participants where most of them were software developers.
 
@@ -314,15 +345,23 @@ When combining the R- and A-distances, we achieve a classifier which both consid
 
 When calculating the A-distance between a probe and a reference, we reuse the feature vectors from the R-distance calculation, however the fact that they are sorted by duration/latency is irrelevant.
 To calculate the A-distance, the system first has to decide which n-graph durations/latencies from the probe are to be considered as \textit{similar} to those in the reference.
-When comparing for instance monographs, the system would regard durations as \textit{similar} if the longer duration divided by the shorter duration is between 1 and an arbitrary threshold.
+When comparing for instance monographs, the system would regard durations as \textit{similar} if the longer duration divided by the shorter duration is between 1 and a specific threshold.
 Using standard deviation instead of a fixed threshold would be a viable option, but the fixed threshold allows comparison between monographs with only one occurrence.
 
 Gunetti and Picardi \cite{gnp} used 1.25 as the threshold for similarity, after testing different thresholds on a subset of their users.
-While another threshold may be optimal for our dataset, we have also decided to use 1.25 for our system, as achieving optimal PA or CA performance is not the purpose of this project.
+While another threshold may be optimal for our dataset, we have also decided to use 1.25 for our system, as achieving an optimal PA or CA performance is not the purpose of this project.
+The A-distance between a probe and reference for a duration or latency $X$ of an n-graph is defined as follows: \begin{equation*}
+    A_X = 1-\frac{\text{number of similar $X$-graphs}}{\text{number of shared $X$-graphs}}
+\end{equation*}
+Following the earlier example, \Cref{tab:A-distance-similar} shows how digraphs from \Cref{tab:R-distance} are deemed as similar using a threshold of 1.25.
+Three out of five digraphs are similar, and so the A-distance becomes $A_\text{{PP}} = 1-3/5 = 0.4$.
+Finally, this A-distance would be combined with the A-distances of the monograph durations and the digraph RP-latencies in the same fashion as the R-distance.
+The R- and A-distances would then be summed to produce the final dissimilarity score of the probe, which would be sent to the decision module.
+In our example using only PP-latencies, the final distance  would be $Dist_{R,A} = 0.66 + 0.4 = 1.06$.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{rcccl}
+\begin{tabular}{ccccl}
  \bf Digraph & \bf Probe & \bf Ref. & \bf Calculation &  \\
  io & 138 & 221 & $221/138=1.60$ &  \\
  ad & 202 & 178 & $202/178=1.13$ & (similar) \\
@@ -330,17 +369,88 @@ While another threshold may be optimal for our dataset, we have also decided to 
  ne & 237 & 244 & $244/237=1.03$ & (similar) \\
  ou & 297 & 196 & $297/196=1.52$ & \\
 \end{tabular}
-\caption{Similarities between trigraphs from \cref{fig:R-measure}.}
+\caption{Similarities between digraphs from \Cref{tab:R-distance} using a threshold of 1.25.}
 \label{tab:A-distance-similar}
 \end{table}
 
-\todo{Use times symbol all over the document.}
+\subsection{Decision Module}
+\label{sec:system-design-PA-decision}
+While Gunetti and Picardi \cite{gnp} compared the score to the references of all users in the system, Ferreira and Santos \cite{superResults} proposed a far less expensive method with regards to computational performance.
+We have adopted this method for our Decision Module, which bases its decisions on a \textit{lockout threshold}.
+%In order to decide whether the current user should be locked out or be allowed to continue, the Decision Module compares the dissimilarity score to a \textit{lockout threshold}.
+If the dissimilarity score is higher than said threshold, the user is locked out.
+The threshold is personally adjusted for every genuine user.
+Similarly to the threshold for penalty or reward in our CA system, the PA system's lockout threshold is calculated by using the user's validation set to find their average dissimilarity score against their own reference and adding a \textit{tolerance level} to the average score.
+Adjusting the tolerance level allowed us to find a suitable balance between FMR and FNMR.
+This is further discussed in \Cref{sec:analysis-PA}.
 
-
-
+Our approach to finding the user's average score is slightly different to that of Ferreira and Santos \cite{superResults}, as they performed a \textit{leave-one-out cross-validation} (LOOCV).
+Their structure for references consisted of several 750-length block samples, which easily allowed them to take out a single sample and test its score against the rest of the user's reference.
+Since our reference structure is not divided into such samples, utilizing the user's validation set for finding their average score was a natural choice.
 
 \section{Combined system}
+\label{sec:system-design-combined}
+When merging the CA and PA systems, they can be regarded as \textit{subsystems} of the combined system.
+As our CA subsystem evaluates every user's behavior and adjusts the trust level accordingly, the PA subsystem waits until enough keystrokes are recorded to fill a block of a specified size.
+If the trust level is brought below the CA subsystem's lockout threshold before the PA system's block sample is filled, the user is still locked out as if there is no PA subsystem involved.
+When the user logs back in, the process starts over and the PA subsystem begins waiting for a new block to be filled, starting from the first key pressed after log-in.
+When testing the performance of our systems, this was simulated by resetting the trust level to its maximum after having dipped below the lockout threshold.
+If the amount of recorded keystrokes evaluated reaches the PA subsystem's block size without being locked out by the CA subsystem, periodic verification is initiated.
+The PA subsystem then processes the block of keystrokes as described in \cref{sec:system-design-PA}.
+When having constructed a probe from the block sample and evaluated it, the result influences current trust level.
+This means that the PA system can not directly lock out the user on its own, but rather does so \textit{indirectly} by lowering the trust level, which in turn can cause a lockout.
 
+Two different designs were implemented for the combination of our subsystems.
+The difference between these two designs is the \textit{fusion level}, or in other words, the way the PA subsystem influences the CA subsystem.
+Not to be confused with \textit{multi-modal biometrics} and fusion levels associated with such systems, our CA/PA combination is either fused at the \textit{decision level} or the \textit{score level}.
+\Cref{sec:system-design-combined-decision,sec:system-design-combined-score} describe these fusion levels.
+
+\subsection{Decision level fusion}
+\label{sec:system-design-combined-decision}
+In multi-modal biometric systems, \textit{decision level fusion} generally means that the boolean (Match or Non-Match) output of a comparison of a specific \textit{mode} is combined with that of another mode using logical operators.
+A mode in this context is a combination of a biometric characteristic type, sensor type and processing method \cite{ISO-voc}.
+Our combined system is not multi-modal, as both systems are using the same characteristic type and are capturing samples using the keyboard, which can be interpreted as the system's sensor.
+Instead, our system can be regarded as \textit{multi-algorithmic}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/system-diagram-decisionlvl.pdf}
+    \caption{Decision level fusion of the CA and PA subsystems. }
+    \label{fig:decisionlvl}
+\end{figure}
+
+A diagram of the decision level fusion of the subsystems can be found in \Cref{fig:decisionlvl}.
+When the PA subsystem processes a probe, it passes its decision on to the CA subsystem's Trust Model.
+Depending on whether the PA subsystem's decision is "Match" or "Non-Match", the trust level is raised or lowered by a certain amount.
+Different values for these changes to the trust level are tested in \Cref{chap:analysis}.
+The new trust level is fed to the CA subsystem's Decision Module which decides to either let the user continue or lock them out.
+
+
+\subsection{Score level fusion}
+\label{sec:system-design-combined-score}
+Instead of using the decision of the PA subsystem to influence the trust level, another option is to directly use its comparison score, as seen in \Cref{fig:scorelvl}.
+This gives the advantage of making smaller changes to the trust level when the classification score is close to the PA subsystem's lockout threshold.
+An alternative way to look at this is that the PA subsystem's influence on the trust level is \textit{weakened} when it is less confident in the genuineness of the current user.
+This is achieved by creating a separate sigmoid function $\textit{Sig}_{\text{PA}}$ in the Dynamic Trust Model which takes the PA subsystem's comparison score as one of its inputs.
+If a probe gets a significantly high dissimilarity score, it may be desirable to let the PA subsystem bring the trust level below the CA subsystem's lockout threshold, even if the current trust is at the maximum level.
+This can be achieved by configuring the height of the sigmoid function to allow such large influences.
+%In order to the PA subsystem the possibility to bring the trust level from the maximum impact the trust level enough to bring it below the CA subsystem's lockout threshold, we can configure the height of the sigmoid function to be larger than the range of allowed trust levels.
+
+For example, let the CA system's lockout threshold $T_{\text{lockout}} = 40$.
+The maximum allowed trust level is $100$, and so the range of allowed trust levels $T_{\text{range}}$ is $100-40 = 60$.
+%We can then configure the height of the sigmoid function in a way that lets the PA comparison score cause a change in trust so that the new trust level can be any number between 100 and slightly below 40.
+We can then set the height of the sigmoid to be slightly higher than $T_{\text{range}}$, for example $60.001$, such as in the third image of \Cref{fig:sigmoids}.
+The PA subsystem can then influence the CA system to lock the user out even if the current trust level is 100, as $100-60.001 = 39.999$.
+For that to happen, the PA classification score has be sufficiently higher than the PA subsystem's own lockout threshold, meaning that the recorded behavior largely deviates from that in the reference.
+
+%The height of the sigmoid function can then be configured so that the PA classification score can cause any possible change in trust level within a certain range.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/system-diagram-scorelvl.pdf}
+    \caption{Score level fusion of the CA and PA subsystems. }
+    \label{fig:scorelvl}
+\end{figure}
 
 
 %\subsection{Outliers}

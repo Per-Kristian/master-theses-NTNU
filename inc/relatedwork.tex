@@ -17,10 +17,10 @@ Using digraphs (or 2-graphs) as an example, the available latencies are as follo
 \begin{itemize}
     \item Press-Press(PP): The time elapsed from pressing down the first key to pressing the second key.
     \item Release-Release(RR): The time between releasing the first key and releasing the second key.
-    \item Release-Press(RP): The time between releasing the first key and pressing the second key. This is often called \textit{flight time}.
+    \item Release-Press(RP): The time between releasing the first key and pressing the second key.
     \item Press-Release(PR): The time from pressing the first key and releasing the second key.
 \end{itemize}
-In the following chapters, the term \textit{duration} will refer to the timing of a monograph, while \textit{latency} will be a general reference to timings of consecutive keystrokes, unless further specified by using the above acronyms.
+In the following chapters, the term \textit{duration} will refer to the timing of a monograph, while \textit{latency} will be a general reference to timings of consecutive keystrokes, unless further specified by using the above acronyms such as "PR-latency".
 
 With these concepts now explained, the related literature can be presented.
 The CA system we will be extending is first summarized in \Cref{sec:related-CA} in order to allow for further discussions on what PA techniques may result in a good fit for our project.
@@ -29,7 +29,7 @@ Relevant PA systems are then discussed in \Cref{sec:related-other} with focus on
 \section{Continuous authentication}
 \label{sec:related-CA}
 The CA system to be extended was a part of the doctoral thesis of Soumik Mondal \cite{mondal}, where a \textit{trust model} was used to lock imposters out.
-Similarly to Bours' CA study \cite{BOURS201236}, Mondal's trust model worked by comparing monographs and digraphs (two consecutive keystrokes) to the genuine user's reference and having the result impact the current \textit{trust level} by means of a penalty-and-reward system.
+Similarly to Bours' CA study \cite{BOURS201236}, Mondal's trust model worked by comparing monographs and digraphs to the genuine user's reference and having the result impact the current \textit{trust level} by means of a penalty-and-reward system.
 
 After the initial static authentication, the user's trust level was set to 100, being the highest achievable level.
 Probe typing patterns deviating from the reference would cause penalties in the form of lowering the trust level, while probe patterns complying with the reference would cause rewards to be given in the form of increasing the trust of the user's genuineness.
@@ -40,7 +40,7 @@ An important part of the trust model was to determine how big a reward or penalt
 For CA based on keystroke dynamics alone, Mondal \cite{mondal} presented and used an implementation of a trust model referred to as \textit{Dynamic Trust Model (DTM)}.
 The size of the reward or penalty was determined by a single continuous function based on a \textit{classification score} computed by comparing the probe to the reference.
 The larger the difference between the classification score and comparison threshold (not to be confused with the lockout threshold), the larger the penalty or reward became.
-Therefore, an action with a classification score just below the comparison threshold would only result in a small decrease in trust level.
+For example, an action with a classification score just below the comparison threshold would only result in a small decrease in trust level.
 
 For keystroke action classification, Mondal followed a machine learning approach and two statistical approaches.
 The first statistical approach (SA-1) calculated the classification score to be used in the DTM by using Scaled Euclidean Distance (SED) for monographs and a combination of SED and Correlation Distance for digraphs. 
@@ -81,7 +81,7 @@ Furthermore, 10\% was used for adjusting the parameters of the algorithms, and t
 \section{Periodic authentication}
 \label{sec:related-other}
 There is a significant amount of available literature on PA systems.
-Discussing it all is beyond the scope of this project plan. The focus will therefore mostly be on research achieving viable results using free-text authentication and having potential for being incorporated into the CA system.
+Discussing it all is beyond the scope of this report. The focus will therefore mostly be on research achieving viable results using free-text authentication and having potential for being incorporated into the CA system.
 This section will present the various options available to us from literature regarding methods used for PA.
 The PA system we will incorporate into the CA system is likely to consist of a custom combination of methods from existing research, as opposed to using an entire PA system as it is described by its original authors.
 
@@ -101,10 +101,12 @@ However, we can look at what promising results have been achieved, and how they 
 This will give us indicators for how we can assemble the best combination of CA and PA.
 
 One of the most cited articles on PA systems was written by Gunetti and Picardi \cite{gnp} and published in 2005.
-They introduced the 'A' and 'R' distances, which were absolute and relative distances used for classification, and they used 2-, 3- and 4-graph latencies in their distance calculations.
+They introduced the R- and A-distances, which were relative and absolute distances used for comparison, and they used 2-, 3- and 4-graph latencies in their distance calculations.
 Their solution is interesting due to how it accounts for variation in genuine users' typing behavior.
 If a genuine user for some reason types slower than usual, for instance due to cold fingers, their typing pattern is likely to stay relatively similar to the regular pattern, only at a slower speed.
 The relative distance accounts for this when comparing a probe to a reference, and is used in combination with the absolute distances of speed between the samples.
+Both the R- and A-distances are explained in detail in \Cref{sec:system-design-PA}.
+
 They achieved a False Match Rate (FMR) of 0.005\% and False Non-Match Rate (FNMR) of 4.833\%, meaning imposters were undetected in 0.005\% of verification processes, while genuine users were wrongfully believed to be imposters in 4.833\% of all cases. 
 This was using a \textit{block size} of 700-900 keystrokes, meaning 700-900 recorded keystrokes were used to form each probe.
 Block sizes this large give imposters a fairly large window of unauthorized access, and for the CA/PA combination, we would like a block size similar to the original CA system's ANIA rate, or smaller.
@@ -120,7 +122,7 @@ ANGA = \frac{block size}{FNMR} = \frac{800}{0.04833} \approx 16553
 \end{equation}
 
 Genuine users are rarely rejected with this ANGA rate, which is also the case in Mondal's \cite{mondal} CA system.
-However, the ANIA rate is higher than that of the original CA system which was 499.
+The ANIA rate is higher than that of the original CA system which was 499, however it is difficult to compare systems using completely different datasets.
 We would prefer a lower ANIA rate than 800 so that the PA system will in more cases have a chance to make a decision before the CA system has already removed access from the current user.
 This way we can make more use of both authentication systems, which will hopefully impact our \textit{research sub-question 1} regarding detection performance.
 
@@ -133,7 +135,7 @@ We would prefer to avoid using such an algorithm in our project in order to keep
 Simply modifying the algorithm to not consider all users per verification process could be an option for increasing the speed, however we can not predict the impact that would have on the detection performance.
 %For 
 
-Several other researchers have also used Gunetti and Picardi's A and/or R distances \cite{davoudi2009, davoudi2010, superResults, hu, sliding, Kolakowska2011, Messerman, Pinto2014, meaningless, KANG201572}.
+Several other researchers have also used Gunetti and Picardi's R- and/or A-distances \cite{davoudi2009, davoudi2010, superResults, hu, sliding, Kolakowska2011, Messerman, Pinto2014, meaningless, KANG201572}.
 %NOTE INCLUDE SOME OF THESE IN SPEC PROJ?
 Of these, especially Ferreira and Santos \cite{superResults} stand out as they attempted to tackle both the block size and computational performance problems of Gunetti and Picardi's \cite{gnp} study.
 They used a block size of 250 keystrokes, achieving an Equal Error Rate (EER) of 1.4\%, meaning the FMR and FNMR are equal at that percentage.
@@ -141,8 +143,8 @@ They also mentioned that a specific setting gave a result of 0.5\% FMR and 2.7\%
 Considering the CA system's ANIA is 499, this amount of keystrokes may positively impact the CA system's imposter detection rate.
 The PA system's ANGA is also in an acceptable range which should not lead to very many false rejections per day.
 
-As opposed to Gunetti and Picardi's solution, Ferreria and Santos' system only compared probes to the reference of the claimed identity, assuring fast computation.
-The size of the reference used was 11250 keystrokes, which is comparable to Mondal's training sets, as mentioned in \cref{sec:related-CA}.
+As opposed to Gunetti and Picardi's solution, Ferreria and Santos' system \cite{superResults} only compared probes to the reference of the claimed identity, assuring fast computation.
+The size of the reference used was 11250 keystrokes, which is comparable to Mondal's \cite{mondal} training sets, as mentioned in \cref{sec:related-CA}.
 Their method involved extracting monograph durations and digraph RP-times.
 %Flight time is a commonly used term for the latency between the release of one key to the pressing of the next.
 Furthermore they also used PP-latencies of 2-, 3-, and 4-graphs, similarly to Gunetti and Picardi \cite{gnp}.
@@ -154,11 +156,11 @@ All in all, this PA system consisted of several mechanisms which could be useful
 They also performed their experiments on data collected in an unconstrained manner, which matches the setting used in Mondal's \cite{mondal} dataset. 
 This increases the possibility of achieving similar performance in our implementation.
 
-Other statistical methods than the A and R measures have also been used in literature.
-Regarding both CA and PA systems, examples include Correlation distance \cite{mondal}, Euclidean distance \cite{Kaneko, Monrose, Harun, Tappert}, Scaled Euclidean distance \cite{mondal}, Kolmogorov-Smirnov Test \cite{park, KANG201572}, multivariate testing \cite{KANG201572}, Chi-square test \cite{chi-square}, Manhattan distance \cite{Kaneko, Harun, cognition} and Scaled Manhattan distance \cite{BOURS201236, Harun}.
+Other statistical methods than the R- and A-distances have also been used in literature.
+Regarding PA systems, examples include Euclidean distance \cite{Kaneko, Monrose, Harun, Tappert}, Kolmogorov-Smirnov Test \cite{park, KANG201572}, multivariate testing \cite{KANG201572}, Chi-square test \cite{chi-square}, Manhattan distance \cite{Kaneko, Harun, cognition} and Scaled Manhattan distance \cite{Harun}.
 %NOTE FIX FØRSTE SETNING UNDER HER.
 Some studies have applied several classifiers \cite{hu, mondal, KANG201572, Harun, cognition, Kaneko}. 
-For instance, Kaneko et al. \cite{Kaneko} applied Euclidean distance, Manhattan distance, a proposed custom distance and Gaussian probability density function. Results showed that Euclidean distance performed best, however the experiment setting was writing a fixed Japanese text of around 200 keystrokes.
+For instance, Kaneko et al. \cite{Kaneko} applied Euclidean distance, Manhattan distance, a proposed custom distance and Gaussian probability density function. Reported results showed that Euclidean distance performed best, however the experiment setting was writing a fixed Japanese text of around 200 keystrokes.
 It is hard to know whether the results would be similar for the dataset to be used in our project, due to the large differences in data collection methods.
 %This is one of many examples showing the difficulty of directly comparing studies in this field.
 %NOTE: Kolakowska not present in specialization project?
@@ -184,7 +186,7 @@ Support vector machine was also used in Mondal's \cite{mondal} CA system along w
 
 \section{Overview}
 \label{sec:related-overview}
-The previous section described the methods used in literature as well as highlighting some particularly interesting studies.
+The previous sections described the methods used in literature as well as highlighting some particularly interesting studies.
 Since we are not restricted to using the entire systems as they are described by their authors, it can be beneficial to look at a general overview of the literature, and compare certain properties of the studies.
 
 \subsection{Data collection}
@@ -196,7 +198,7 @@ Participants wrote static text in \cite{hu, Kolakowska2011}, and manually copied
 %while Kim et al. \cite{KIM2017} assigned different such texts to every participants to simulate free-text.
 While the focus of our project is on keystrokes from physical keyboards, it is worth mentioning that keystroke dynamics using soft or touch keyboards has also been researched, such as is Kang and Cho's publication from 2015 \cite{KANG201572}.
 
-With regards to participants included in experiments, 14 researches had 30 or more participants \cite{Messerman, gnp, Ahmed, superResults, KIM2017, 900words, sliding, Monrose, park, monaco, KANG201572, dowl, cognition, meaningless, stewart}.
+With regards to participants included in experiments, 15 researches had 30 or more participants \cite{Messerman, gnp, Ahmed, superResults, KIM2017, 900words, sliding, Monrose, park, monaco, KANG201572, dowl, cognition, meaningless, stewart}.
 One of these had 2000 participants \cite{900words}.
 Since the dataset we will be using \cite{mondal} contains data from 53 users, the variance in inter-user behavior is expected to be more than high enough to be comparable to other studies.
 
@@ -206,7 +208,7 @@ The related studies extracted various latencies from n-graphs, however some also
 When considering consecutive keystrokes, some studies \cite{davoudi2009, davoudi2010, KIM2017, Ahmed, Janakiraman2007, Solami, BOURS201236, Monrose, park, monaco, chi-square, markov, Harun, occ, stewart, Tappert, meaningless, fast, pohmm} restricted themselves to considering digraphs only.
 This was also done by Mondal \cite{mondal}.
 One study \cite{900words} used only trigraphs, while the rest used several types of n-graphs.
-Locklear et al. \cite{cognition} used congition-centric features in addition to keystroke timings,
+Locklear et al. \cite{cognition} used cognition-centric features in addition to keystroke timings,
 and six studies \cite{occ, Tappert, stewart, alsultan, monaco, pohmm} included other statistical features such as the rate of certain key presses, words per minute and/or rate of typing errors.
 Of these, one of the studies \cite{stewart} presented an  extension of an existing system \cite{Tappert} where the new system also utilized stylometry.
 
@@ -224,17 +226,17 @@ Therefore, this chapter is concluded with \Cref{tab:summary}, where an overview 
 \resizebox*{\dimexpr\textheight-12\baselineskip\relax}{!}{%
 \begin{tabular}{llllllll}
 \hline
-\textbf{Paper} & \textbf{Block length} & \textbf{Users} & \textbf{Task} & \textbf{Method} & \textbf{Performance} & \textbf{Features} & \textbf{DB} \\ \hline
-\cite{gnp} & 700-900 & 40 & Webform & R and A measures & \begin{tabular}[c]{@{}l@{}}FMR 0.005\% \\ FNMR 4.833\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}2-, 3- and \\ 4-graph latency\end{tabular} & Own* \\ \hline
-\cite{Messerman} & 50 - 150 & 50 & E-mail & R measure & \begin{tabular}[c]{@{}l@{}}FMR 2.02\%\\ FNMR 1.84\%\end{tabular} & n-graph latency & Own \\ \hline
-\cite{superResults} & 250 & 60 & Unconstrained & R and A measures & EER 1.4\% & \begin{tabular}[c]{@{}l@{}}Duration, Digraph RP,\\ PP for \{1-4\}-graphs\end{tabular} & Own \\ \hline
-\cite{Pinto2014} & 150 & 10 & Unconstrained & R and A measures & \begin{tabular}[c]{@{}l@{}}FMR $\sim$2\%\\ FNMR $\sim$2\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}Duration, Digraph RP,\\ PP for \{1-4\}-graphs\end{tabular} & Own \\ \hline
-\cite{davoudi2009} & 700-900 & 21 & Webform & Modified R measure & \begin{tabular}[c]{@{}l@{}}FMR 0.08\%\\ FNMR 18.8\%\end{tabular} & Digraph latency & \cite{gnp} \\ \hline
-\cite{davoudi2010} & 700-900 & 21 & Webform & Weighted R measure & \begin{tabular}[c]{@{}l@{}}FMR 0.07\%\\ FNMR 15.2\%\end{tabular} & Digraph latency & \cite{gnp} \\ \hline
+\textbf{Paper} & \textbf{Block size} & \textbf{Users} & \textbf{Task} & \textbf{Method} & \textbf{Performance} & \textbf{Features} & \textbf{DB} \\ \hline
+\cite{gnp} & 700-900 & 40 & Webform & R- and A-distances & \begin{tabular}[c]{@{}l@{}}FMR 0.005\% \\ FNMR 4.833\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}2-, 3- and \\ 4-graph latency\end{tabular} & Own* \\ \hline
+\cite{Messerman} & 50 - 150 & 50 & E-mail & R-distances & \begin{tabular}[c]{@{}l@{}}FMR 2.02\%\\ FNMR 1.84\%\end{tabular} & n-graph latency & Own \\ \hline
+\cite{superResults} & 250 & 60 & Unconstrained & R- and A-distances & EER 1.4\% & \begin{tabular}[c]{@{}l@{}}Duration, Digraph RP,\\ PP for \{2-4\}-graphs\end{tabular} & Own \\ \hline
+\cite{Pinto2014} & 150 & 10 & Unconstrained & R- and A-distances & \begin{tabular}[c]{@{}l@{}}FMR $\sim$2\%\\ FNMR $\sim$2\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}Duration, Digraph RP,\\ PP for \{2-4\}-graphs\end{tabular} & Own \\ \hline
+\cite{davoudi2009} & 700-900 & 21 & Webform & Modified R-distance & \begin{tabular}[c]{@{}l@{}}FMR 0.08\%\\ FNMR 18.8\%\end{tabular} & Digraph latency & \cite{gnp} \\ \hline
+\cite{davoudi2010} & 700-900 & 21 & Webform & Weighted R-distance & \begin{tabular}[c]{@{}l@{}}FMR 0.07\%\\ FNMR 15.2\%\end{tabular} & Digraph latency & \cite{gnp} \\ \hline
 \cite{Ahmed} & 500 & 53 & Unconstrained & Neural Network (NN) & \begin{tabular}[c]{@{}l@{}}FMR 0.0152\%\\ FNMR 4.82\%\\ EER 2.13\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}Duration, \\ digraph latency 
 %flight time
 \end{tabular} & Own \\ \hline
-\cite{hu} & 36 & 19 & Webform, static text & \begin{tabular}[c]{@{}l@{}}R and A measures,\\ k-Nearest Neighbor\end{tabular} & \begin{tabular}[c]{@{}l@{}}FMR 0.045\%\\ FNMR 0.005\%\end{tabular} & n-graph latency & Own \\ \hline
+\cite{hu} & 36 & 19 & Webform, static text & \begin{tabular}[c]{@{}l@{}}R- and A-distances,\\ k-Nearest Neighbor\end{tabular} & \begin{tabular}[c]{@{}l@{}}FMR 0.045\%\\ FNMR 0.005\%\end{tabular} & n-graph latency & Own \\ \hline
 \cite{900words} & 900 words & 2000 & Pre-defined tasks & \begin{tabular}[c]{@{}l@{}}Kernel Ridge Regression,\\ truncated RBF kernel\end{tabular} & EER 1.39\% & Trigraph latency & \cite{chang} \\ \hline
 \cite{KIM2017} & 1000 & 150 & Copytask & K-means clustering & EER 0.44\% & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latencies\end{tabular} & Own \\ \hline
 \cite{Solami} & 700-900 & 14 & Webform & K-means clustering & Accuracy 100\% & Digraph latency & \cite{gnp} \\ \hline
@@ -244,13 +246,13 @@ Therefore, this chapter is concluded with \Cref{tab:summary}, where an overview 
 \cite{Monrose} & Unknown & 31 & Pre-defined tasks & \begin{tabular}[c]{@{}l@{}}Euclidean distance, \\ weighted probability\end{tabular} & Accuracy 23\% & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latency
 %flight time
 \end{tabular} & Own \\ \hline
-\cite{sliding} & \begin{tabular}[c]{@{}l@{}}1 min\\ sliding window\end{tabular} & 56 & Unconstrained & R and A measures & \begin{tabular}[c]{@{}l@{}}FMR 1\%\\ FNMR 11.5\%\end{tabular} & n-graph latency & Own* \\ \hline
+\cite{sliding} & \begin{tabular}[c]{@{}l@{}}1 min\\ sliding window\end{tabular} & 56 & Unconstrained & R- and A-distances & \begin{tabular}[c]{@{}l@{}}FMR 1\%\\ FNMR 11.5\%\end{tabular} & n-graph latency & Own* \\ \hline
 \cite{BOURS201236} & Continuous & 25 & Unconstrained & Scaled Manhattan distance & ANIA 182 & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latency\end{tabular} & Own \\ \hline
 \cite{mondal} & Continuous & 53 & Unconstrained & \begin{tabular}[c]{@{}l@{}}Scaled Euclidean Distance,\\ Correlation distance, NN,\\ Support Vector Machine\end{tabular} & \begin{tabular}[c]{@{}l@{}}ANIA 499\\ ANGA 16057\end{tabular} & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latencies\end{tabular} & Own \\ \hline
 \cite{monaco} & 775 on average & 119 & Pre-defined tasks & k-Nearest Neighbor & EER 3.7\% & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latencies,\\ statistical features\end{tabular} & Own \\ \hline
 \cite{park} & 300 & 35 & Pre-defined tasks & Kolmogorov-smirnov test & EER 0.09\% & Digraph latency & Own \\ \hline
 \cite{chi-square} & 150 & 26 & Unconstrained & Chi-square test & FNMR 5\% & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latency\end{tabular} & Own \\ \hline
-\cite{Kolakowska2011} & 600 & 10 & Webform, static text & R and A measures & \begin{tabular}[c]{@{}l@{}}FMR 4.09\%\\ FNMR 5.17\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}Duration; \\ 2-, 3-, 4- and\\ 5-graph latency\end{tabular} & Own \\ \hline
+\cite{Kolakowska2011} & 600 & 10 & Webform, static text & R- and A-distances & \begin{tabular}[c]{@{}l@{}}FMR 4.09\%\\ FNMR 5.17\%\end{tabular} & \begin{tabular}[c]{@{}l@{}}Duration; \\ 2-, 3-, 4- and\\ 5-graph latency\end{tabular} & Own \\ \hline
 \cite{KANG201572} & 100-1000 & 35 & Textbox & 12 different classifiers & EER 5.64-14.53\% & Digraph latency %(PP) 
 & Own \\ \hline
 \cite{dowl} & Continuous & 35 & Unconstrained & Unknown distance & \begin{tabular}[c]{@{}l@{}}ANIA 6390\\ ANGA 68755\end{tabular} & \begin{tabular}[c]{@{}l@{}}Digraph, trigraph and\\ word latency\end{tabular} & Own \\ \hline
@@ -266,7 +268,7 @@ Therefore, this chapter is concluded with \Cref{tab:summary}, where an overview 
 \cite{fast} & 250 & 21 & Webform & Clustering, random forest & \begin{tabular}[c]{@{}l@{}}FMR 3.47\%\\ FNMR 0\%\end{tabular} & Digraph latency %(PP) & 
 & \cite{gnp} \\ \hline
 \cite{alsultan} & 1000 & 30 & Textbox; copytask & Decision trees & \begin{tabular}[c]{@{}l@{}}FMR 1.1\%\\ FNMR 28\%\end{tabular} & Statistical features & Own \\ \hline
-\cite{pohmm} & \begin{tabular}[c]{@{}l@{}}Sliding window\\ of length 500\end{tabular} & 55 & Pre-defined tasks & \begin{tabular}[c]{@{}l@{}}Partially Observable\\ Hidden Markov Model\end{tabular} & ANIA 55.18 & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latencies,\\ statistical features\end{tabular} & \cite{essay}
+\cite{pohmm} & \begin{tabular}[c]{@{}l@{}}Sliding window\\ of length 500\end{tabular} & 55 & Pre-defined tasks & \begin{tabular}[c]{@{}l@{}}Partially Observable\\ Hidden Markov Model\end{tabular} & ANIA 55.18 & \begin{tabular}[c]{@{}l@{}}Duration,\\ digraph latencies,\\ statistical features\end{tabular} & \cite{essay} \\ \hline
 
 %\textbf{Paper}  & \textbf{Block length}                                          & \textbf{Users} & \textbf{Task}        & \textbf{Method}                                                                                                         & \textbf{Performance}                                                            & \textbf{Features}                                                                          & \textbf{DB} \\ \hline
 %gnp             & 700-900                                                        & 40             & Webform              & R and A measures                                                                                                        & \begin{tabular}[c]{@{}l@{}}FMR 0.005\% \\ FNMR 4.833\%\end{tabular}             & \begin{tabular}[c]{@{}l@{}}2-, 3- and \\ 4-graph latency\end{tabular}                      & Own*        \\ \hline
