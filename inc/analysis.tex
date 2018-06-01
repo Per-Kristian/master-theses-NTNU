@@ -22,12 +22,12 @@ We chose to do full test runs for every system configuration, meaning that all 4
 If the intention of this project was to propose biometric systems with certain performances using given sets of parameters, doing full test runs like this would lead to \textit{overfitting}.
 However, our aim was to observe how different ways of combining CA and PA systems affected performance.
 To observe this, full test runs were needed per configuration.
-Replicating our systems with the exact same parameters is therefore likely to give different results, though one can expect to see similar \textit{effects} on base performances when adjusting parameters in the same way as we have done.
+Replicating our systems with the exact same parameters for another dataset is therefore likely to give different results, though one can expect to see similar \textit{effects} on base performances when adjusting parameters in the same way as we have done.
 
 \Cref{sec:analysis-CA} describes how we tested the CA system and found the configuration to be used in the combined system. 
 The testing of the PA system is described in \Cref{sec:analysis-PA}.
-The results for the decision level fusion are discussed in \text{sec:analysis-decision-lvl}, while score level fusion results are presented in \Cref{sec:analysis-score-lvl}.
-This chapter is concluded with a discussion on computational impact in \Cref{sec:analysis-computational-impact}.
+The results for the decision level fusion are discussed in \Cref{sec:analysis-decision-lvl}, while score level fusion results are presented in \Cref{sec:analysis-score-lvl}.
+An overview of the best results is given in \Cref{sec:analysis-overview-best-results}, before the chapter is concluded with a discussion on computational impact in \Cref{sec:analysis-computational-impact}.
 
 
 \section{CA system}
@@ -46,12 +46,13 @@ For example, when using the sigmoid function seen in \Cref{fig:sig185}, we teste
 The results of these tests can be found in \Cref{tab:adjusting-SO-NO}.
 The CA system becomes more strict as the SO and NO scores are increased, as this means that the trust levels are affected more negatively.
 However, it has a larger impact on ANIA than ANGA.
+This was expected, as the genuine user does not type these n-graphs regularly, but an imposter still migh.
 Furthermore, we also tested the impact of lowering the SO score while keeping the NO score near maximum.
 The result of this test can be seen in the last section of \Cref{tab:adjusting-SO-NO}.
 Compared to the section above, it seems that the NO score has a much larger impact.
 We can also see that the performance was negatively affected by using a low SO score, as 4 more imposters went undetected, and one user was moved from the -/+ category to the -/- category.
 Therefore, it seems that having harsh punishments for n-graphs not present or with only a single occurrence in the reference leads to better overall detection performance.
-We continued testing the system using such harsh punishments.
+We continued testing the system using $\text{SO} = \text{3.0}$ and $\text{NO} = \text{3.3}$.
 
 \begin{figure}[h]
     \centering
@@ -100,13 +101,14 @@ We continued testing the system using such harsh punishments.
 In \Cref{sec:system-design-CA-ref}, we mentioned that we tested the CA system with and without outlier values in the reference.
 When testing the system with these outliers removed, we observed a severe drop in both ANGA and ANIA ratings.
 This essentially means that the system became more \textit{strict}, rapidly locking out both imposters and genuine users.
-The reason for this lies in how our classifier (SMD) is scales Manhattan distances using standard deviation, which accounts for the dispersion of timing values.
+The reason for this lies in how our classifier (SMD) is scaled using standard deviation, which accounts for the dispersion of timing values.
 The dispersion decreases when removing outliers, and a consequence is that the system expects keystroke features with less distance to the reference than before outlier removal.
 Therefore, we had to make adjustments to the DTM's system level parameters to account for this change in expected user behavior.
 
 The results in \Cref{tab:adjusting-SO-NO} were achieved \textit{without} outlier removal.
 The parameters which gave an ANGA of 6146 and ANIA of 676 gave an ANGA of 1255 and ANIA of 218 when outliers were removed during reference construction.
 We attempted to lower $T_{\text{lockout}}$ from 90 to 80 to make the system less strict, though this resulted in the ANIA rating increasing rapidly compared to the ANGA rating.
+Specifically, it resulted in 4429 ANGA and 787 ANIA.
 In other words, imposters gained too much of an advantage compared to the genuine user to justify this method for making the system more liberal.
 %Lowering $T_{\text{lockout}}$ from 90 to 80 resulted in an ANGA of 4429 and ANIA of 787, which showed rapid growth of the ANIA rating compared to the ANGA rating's growth.
 
@@ -120,7 +122,7 @@ With such positive results, we kept the outlier removal mechanism when combining
 \begin{table}[h]
 \centering
 \begin{subtable}[h]{0.45\textwidth}
-\begin{tabular}{rrrr}
+\begin{tabular}{lrrr}
 \hline
  $T_{\text{lockout}}$ & ANGA  & ANIA & \#Imp. ND  \\ \hline
  80                   & 1615  & 174  & 2          \\
@@ -138,7 +140,7 @@ With such positive results, we kept the outlier removal mechanism when combining
 \hfill
 \begin{subtable}[h]{0.45\textwidth}
 \centering
-\begin{tabular}{rrrr}
+\begin{tabular}{lrrr}
 \hline
  $T_{\text{lockout}}$ & ANGA  & ANIA & \#Imp. ND \\ \hline
  80                   & 1569  & 159  & 2         \\
@@ -176,6 +178,7 @@ As our PA system has an element of \textit{personalization} in its lockout thres
 The incentive to do so was that incorporating a personalized PA system into a CA system which only uses global parameters might be viewed as an unfair method for improving performance.
 Therefore, we also built a version of our CA system which uses customized thresholds for rewards/penalties for each user.
 \Cref{sec:CA-trust-and-decision} describes how the thresholds are calculated by using mean scores and tolerance levels.
+The SO and NO parameters were then locked at 5, to ensure that users were punished for typing rarely or never before seen n-graphs, even with these customized thresholds.
 
 Adjusting the tolerance level led to the results presented in \Cref{tab:CA-persRwrdThresh}, where using a tolerance level of 0.5 led to the most reasonable performance.
 It was achieved with $T_{\text{lockout}}=50$, and can be compared to the result in \Cref{tab:CA-outliers-removed-with-cutoff} where also $T_{\text{lockout}} = 50$.
@@ -185,9 +188,9 @@ Overall, these settings gave a satisfying performance and were used as the base 
 
 \begin{table}[h]
 \centering
-\begin{tabular}{rrrr}
+\begin{tabular}{lrrr}
 \hline
-Tolerance & ANGA  & ANIA & \#Imp. ND  \\ \hline
+Toler. & ANGA  & ANIA & \#Imp. ND  \\ \hline
 0   & 268   & 69  & 0  \\
 0.1 & 770   & 93  & 0  \\
 0.2 & 2107  & 143 & 3  \\
@@ -211,7 +214,9 @@ In other words, this parameter decided the system's strictness.
 %The goal was to find a reasonable balance which had a high chance of detecting imposters 
 %thereby controlling the tradeoff of catching imposters more quickly and locking out the genuine user more often.
 
-When combining the CA and PA systems, the same sets of keystrokes had to be used to build the references and test sets.
+%When combining the CA and PA systems, the same sets of keystrokes had to be used to build their references, as well as their test sets.
+%When combining the CA and PA systems, the datasets had to be separated into references, validation sets and test sets in an identical manner.
+The users' datasets had to be separated into references, validation sets and tests sets in an identical manner for the CA and PA systems.
 This was needed due to the combined system using the exact same keystroke data for both the CA and PA subsystems during testing.
 If the reference cutoff was used in only one of the subsystems, the test sets would contain different keystrokes, as the cutoff causes data from the reference portion of the dataset to be moved into the test portion.
 The advantages given by the cutoff described in \Cref{sec:analysis-cutoff} also hold for the PA system.
@@ -220,7 +225,7 @@ Seeing as the impact of the cutoff was small for both systems, the cutoff was us
 \begin{table}[h]
 \centering
 \begin{subtable}[h]{0.45\textwidth}
-\begin{tabular}{rrrl}
+\begin{tabular}{lrrr}
 \hline
 Toler. & FNMR & FMR & \#Imp. ND  \\ \hline
 0.02 & 47.51 & 4.68  & 2   \\
@@ -242,7 +247,7 @@ Toler. & FNMR & FMR & \#Imp. ND  \\ \hline
 \hfill
 \begin{subtable}[h]{0.45\textwidth}
 \centering
-\begin{tabular}{rrrl}
+\begin{tabular}{lrrr}
 \hline
 Toler. & FNMR  & FMR & \#Imp. ND \\ \hline
 0.02 & 48.08 & 4.68  & 2   \\
@@ -261,7 +266,7 @@ Toler. & FNMR  & FMR & \#Imp. ND \\ \hline
 \caption{With reference cutoff.}
 \label{tab:PA-with-cutoff}
 \end{subtable}
-\caption{Excerpt of PA results showing the performance impact of using a reference cutoff. A block size of 500 keystrokes was used.}
+\caption{Excerpt of PA results showing the performance impact of using a reference cutoff. A block size of 500 keystrokes was used. A complete version on this table is found in \Cref{sec:app-PA-reference-cutoff}.}
 \label{tab:PA-cutoff}
 \end{table}
 
@@ -275,11 +280,12 @@ The curves show that summing the R-and A-distances with equal weights outperform
 While we did not analyze the underlying reasons, it is worth pointing out that Pinto et al. used five different timing features where our system only uses three.
 We also used a smaller block size of 500 keystrokes compared to their 750 keystrokes, and as mentioned in \Cref{sec:system-design-PA-comparison}, their dataset was limited.
 All of these factors could play a role in why we had less success with their weighting scheme.
+As we were not looking for the optimal PA solution, we did not test to see if other weights were better. 
 Equal weights were chosen for further analysis due to the superior performance.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=1\textwidth]{figures/RAweights.pdf}
+    \includegraphics[width=1\textwidth]{figures/weights.pdf}
     \caption{Detection error tradeoff curves showing the detection performance of weighing R- and A-distances by 20-80\% respectively as well as using equal weights. }
     \label{fig:RAweights}
 \end{figure}
@@ -292,6 +298,13 @@ These were 500, 250 and 100 keystrokes.
 As a dissimilarity score is produced per block, the system has more information to base every dissimilarity score on when the block size is large.
 This generally leads to more accurate decisions per block, and is reflected in the DET curves in \Cref{fig:block-lengths-ROC}.
 There is a clear difference in detection accuracy between the block lengths that were tested, with 500 outperforming both of the other block sizes, and size 100 achieving the worst performance in terms of detection accuracy.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/PA-BLs-ROC.pdf}
+    \caption{DET curves showing the performance for different block sizes.}
+    \label{fig:block-lengths-ROC}
+\end{figure}
 
 This does not necessarily imply that using a block size of 500 gives a \textit{better} PA system.
 When the PA system waits for 500 keystrokes to be collected before processing probes, the imposter has a large window of access to the computer before they are locked out.
@@ -313,7 +326,7 @@ All of these block sizes could then be used for testing the combined system late
 \begin{table}[h]
 \centering
 \begin{subtable}[h]{0.45\textwidth}
-\begin{tabular}{rrrr}
+\begin{tabular}{lrrr}
 \hline
 Toler. & ANGA  & ANIA & \#Imp. ND  \\ \hline
 0.35 & 12989 & 675 & 36 \\
@@ -332,7 +345,7 @@ Toler. & ANGA  & ANIA & \#Imp. ND  \\ \hline
 \hfill
 \begin{subtable}[h]{0.45\textwidth}
 \centering
-\begin{tabular}{rrrr}
+\begin{tabular}{lrrr}
 \hline
 Toler. & ANGA  & ANIA & \#Imp. ND \\ \hline
 0.5  & 12634 & 476 & 52 \\
@@ -351,7 +364,7 @@ Toler. & ANGA  & ANIA & \#Imp. ND \\ \hline
 
 \begin{subtable}[h]{0.45\textwidth}
 \centering
-\begin{tabular}{rrrr}
+\begin{tabular}{lrrr}
 \hline
 Toler. & ANGA  & ANIA & \#Imp. ND \\ \hline
 0.7  & 8288 & 395 & 98 \\
@@ -368,14 +381,14 @@ Toler. & ANGA  & ANIA & \#Imp. ND \\ \hline
 \label{tab:PA-block-size-100}
 \end{subtable}
 
-\caption{PA results achieved with different block sizes and tolerance levels.}
+\caption{Excerpt of PA results achieved with different block sizes and tolerance levels.}
 \label{tab:PA-block-sizes}
 \end{table}
 
-The ANGA and ANIA rates of the PA system are calculated based on their FNMR and FMR rates and are presented in \Cref{tab:PA-block-sizes}, where the performance of the block sizes can be further compared.
+The ANGA and ANIA rates of the PA system are calculated based on FNMR and FMR rates and are presented in \Cref{tab:PA-block-sizes}, where the performance of the block sizes can be further compared.
 An immediate observation is that small blocks sizes give lower ANIA rates than larger block sizes when similar ANGA rates are compared.
 For example, when comparing results with approximately 2000 ANGA, the respective ANIA rates for block sizes 500, 250 and 100 are around 552, 313 and 192.
-If were were to judge the performance solely based on ANGA and ANIA rates, it would seem that small block sizes are better.
+If we were to judge the performance solely based on ANGA and ANIA rates, it would seem that small block sizes are better.
 However, the smaller block sizes tend to have significantly more undetected imposters.
 Also, with higher ANGA rates, the smaller block sizes cause the system to often need more than one block to catch imposters.
 While this is not necessarily a large issue in a stand-alone PA system with such small block sizes, problems can arise when combined with the CA system.
@@ -385,12 +398,6 @@ For instance, if the imposter's current trust level is 60, and $T_{\text{lockout
 This would give the imposter a larger window of opportunity than if the PA system was not involved in the first place, as the CA system probably would have brought the trust level below $T_{\text{lockout}}$ a few moments later.
 Smaller block sizes are therefore not necessarily the better option for the combined system.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{figures/block-lengths-ROC.pdf}
-    \caption{DET curves showing the performance for different block sizes.}
-    \label{fig:block-lengths-ROC}
-\end{figure}
 
 \section{Decision level fusion}
 \label{sec:analysis-decision-lvl}
@@ -413,17 +420,36 @@ They were \textit{'UP'} and \textit{'DOWN'},
 each representing how large a portion of $T_{\text{range}}$ to increase or decrease the current trust level by, respectively.
 For instance, with $\textit{UP}=0.3$ and $\textit{DOWN}=0.6$, probe blocks producing a match would increase the trust level by $0.3 \times 50 = 15$.
 Probes producing a non-match would decrease the trust level by $0.6 \times 50 = 30$.
-Such a configuration would punish punish imposters more than it would reward the genuine user.
+Such a configuration would punish imposters more than it would reward the genuine user.
+%Therefore, it would lock out imposters quicker, and cause reduced damage if they were falsely believed to be the genuine user.
 
 The \textit{UP} and \textit{DOWN} values were set as system level parameters, i.e. they were the same for all users per test.
 Optimizing these values for each user using genetic algorithms or other optimization techniques is another option.
 Such algorithms are however computationally expensive and time consuming, and were not used for this project.
 
-Another example setting that we tested was $\textit{UP}=1$ and $\textit{DOWN}=0.6$.
-\Cref{fig:decision-lvl-genuine-250BL} shows an except of testing this setting with User 1 as a genuine user, meaning that their test set was used against their own reference.
+An example of a setting that we tested was $\textit{UP}=1$ and $\textit{DOWN}=0.6$.
+\Cref{fig:decision-lvl-genuine-250BL} shows an excerpt of testing this setting with User 1 as a genuine user, meaning that their test set was used against their own reference.
 In the beginning, the user seemed to be typing in an unusual manner compared to their reference causing the CA subsystem to rapidly decrease the trust level.
 After 108 keystrokes, the trust level went below $T_{\text{lockout}}$, marking the undesired event of locking out the genuine user.
 The block size was 250 in this case, and since the CA subsystem locked out the user before the block was filled up, the PA subsystem did not get a chance to prevent the lockout.
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.8\textwidth}
+   \includegraphics[width=1\linewidth]{figures/decision-lvl-genuine-250BL.pdf}
+   \caption{User 1 as genuine user.}
+   \label{fig:decision-lvl-genuine-250BL} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.8\textwidth}
+   \includegraphics[width=1\linewidth]{figures/decision-lvl-user2-vs-user1-250BL.pdf}
+   \caption{User 2 as imposter vs User 1's reference.}
+   \label{fig:decision-lvl-user2-vs-user1-BL250}
+\end{subfigure}
+
+\caption{Examples of decision level fusion with $\text{block size} = 250$. $\textit{UP} = 1, \textit{DOWN} = 0.6$.}
+\label{fig:decision-lvl-user1-example}
+\end{figure}
 
 The trust level was brought back up to 100 after the lockout, which simulated the user logging back in and continuing typing.
 The PA subsystem started collecting keystroke data for a new block from that point onward.
@@ -447,33 +473,16 @@ After that, the CA subsystem was unable to cause another lockout on its own.
 However, at keystroke number 999, the PA subsystem brought the trust level down to 70, and later on brought it below the threshold at keystroke 1249.
 Especially the last two PA influences show how using the statistical information available in block probes can be beneficial to utilize in a combined CA/PA system.
 
-\begin{figure}[htbp]
-\centering
-\begin{subfigure}[b]{0.8\textwidth}
-   \includegraphics[width=1\linewidth]{figures/decision-lvl-genuine-250BL.pdf}
-   \caption{User 1 as genuine user.}
-   \label{fig:decision-lvl-genuine-250BL} 
-\end{subfigure}
-
-\begin{subfigure}[b]{0.8\textwidth}
-   \includegraphics[width=1\linewidth]{figures/decision-lvl-user2-vs-user1-250BL.pdf}
-   \caption{User 2 as imposter vs User 1's reference.}
-   \label{fig:decision-lvl-user2-vs-user1-BL250}
-\end{subfigure}
-
-\caption{Examples of decision level fusion with $\text{block size} = 250$. $\textit{UP} = 1, \textit{DOWN} = 0.6$.}
-\label{fig:decision-lvl-user1-example}
-\end{figure}
 
 \subsection{Results}
-
-Before looking at how the incorporation of the PA system had on the original CA system's performance, we will discuss some observations regarding the impact of the decision level fusion's parameters.
+\label{sec:analysis-decision-lvl-results}
+Before looking at how the incorporation of the PA system had an influence on the original CA system's performance, we will discuss some observations regarding the impact of the decision level fusion's parameters.
 The first observation to mention is that adjusting the \textit{DOWN} parameter generally had a larger impact on detection performance than the \textit{UP} parameter.
 An example of this can be seen in \Cref{tab:UD-difference-1.001,tab:UD-difference-0.4}, as the performance difference between them was negligible even with a considerable difference in \textit{UP} values.
-However, adjusting the \textit{DOWN} parameter from 0 to 1.001 caused a difference of almost 4000 ANGA and over 400 ANIA.
+However, adjusting the \textit{DOWN} parameter from 0 to 1.001 caused a difference of over 2500 ANGA and over 340 ANIA.
 The reason for testing $\textit{DOWN}=\text{1.001}$ was the same as explained in \Cref{sec:system-design-combined-score}; it allowed the PA subsystem's influence to cause a direct lockout even when the current trust level was at its maximum.
 As seen in the tables, the extra 0.001 in \textit{DOWN} value showed its effect by causing a drop in both ANGA and ANIA. 
-However, the ANGA showed a drop of $6366-6018 = 348$ in \Cref{tab:UD-difference-1.001}, while the ANIA only dropped by $306-298 = 8$.
+However, the ANGA showed a drop of $6366-6018 = 348$ in \Cref{tab:UD-difference-0.4}, while the ANIA only dropped by $306-298 = 8$.
 %In the same table we can see similar drops in ANGA where the corresponding ANIA drop is around 50.
 %What this means is that the benefit of being able to lock out imposters who are currently at trust level 100 is small compared tcatching imposters 8 keystrokes earlier on average has a large negative consequence
 This indicates that letting the PA subsystem lock out users who are currently at trust level 100 has large consequences for genuine users compared to the benefit of locking out imposters faster.
@@ -481,7 +490,7 @@ This makes sense, as a user at trust level 100 is more likely to be the genuine 
 When these genuine users are wrongfully brought from trust level 100 to below $T_{\text{lockout}}$, the CA subsystem is given no chance to correct the PA subsystem's mistake.
 Since imposters spend more time below trust level 100, reducing their trust level by $1\times T_{\text{range}}$ will often bring them far below $T_{\text{lockout}}$ which could be considered an "overkill".
 Therefore, the extra 0.001 punishment is less likely to make a difference for them than for genuine users.
-This ties into our \textit{research sub-question 3}, as it seems that having the PA subsystem adjust the trust level is generally better than guaranteeing that a non-match results in an instant lockout.
+This ties into our \textit{research sub-question 2}, as it seems that having the PA subsystem adjust the trust level is generally better than guaranteeing that a non-match results in an instant lockout.
 In spite of this, we continued testing $\textit{DOWN} = \text{1.001}$ to see if similar behavior was shown for other settings as well.
 
 The reason for testing $\textit{UP} = \text{1.001}$ instead of 1 is simply that we originally tested the system using equal values for \textit{UP} and \textit{DOWN}, and $\textit{DOWN} = \text{1.001}$ was needed for the reason mentioned above.
@@ -585,15 +594,16 @@ The first block size tested was 500 keystrokes.
 From the PA results in \Cref{tab:PA-block-size-500}, we chose to use a tolerance level of 0.33, as it gave an ANGA of 10670 and ANIA of 656.
 Having such a high ANGA while still having an ANIA comparable to the CA system's ANIA of 623 seemed beneficial for the combined system, and was the reason for choosing this PA setting.
 The underlying FNMR and FMR rates which were used for calculating the ANGA and ANIA were 4.69\% and 23.8\%, respectively.
-The original CA system's performance is presented with more detail in \Cref{tab:CA-detailed-performance}.
+%The original CA system's performance is presented with more detail in \Cref{tab:CA-detailed-performance}.
 
 Looking back at \Cref{tab:UD-difference-1.001}, we can see that the mentioned PA configuration was indeed able to positively affect the CA system's performance.
 With $\textit{DOWN} = \text{0.2}$, the results were a higher ANGA for a slightly lower ANIA.
 Specifically, the genuine users were able to type $8545-8087 = 458$ more keystrokes on average before being locked out, which is an increase of 5.66\%.
 The ANIA was impacted more heavily, as seen where $\text{DOWN} = \text{0.6}$.
 With an almost identical ANGA to that of the original CA system, the ANIA was lowered by $\text{623}-\text{508} = \text{115}$ which is an improvement of 18.46\%.
-This means that imposters were caught significantly quicker on average with the combined system, confirming our main research question.
+This means that imposters were caught significantly quicker on average with the combined system, supporting our main research question.
 Also, the number of imposters that were never detected was reduced from 18 to 11.
+This setting gave the best result for decreasing ANIA that we were able to find in this project.
 
 Lastly, we can point out that for this block size, the ANGA saturated around 8545.
 Increasing it any further beyond that point only resulted in a worse ANIA.
@@ -602,20 +612,6 @@ With that setting, only 3 out of 2070 imposters were undetected.
 %The general observed behavior of the decision level fusion is that increasing the \textit{U/D} values causes a decrease of both ANGA and ANIA.
 %IS THIS DESCRIBED EARLIER?
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{lrrrr}
-\hline
-\textit{} Category & \#Users & ANGA & ANIA & \#Imp. ND \\ \hline
-+/+ & 6  & 17409 & 269  & 0  \\
-+/- & 1  & 12256 & 485  & 1  \\
--/+ & 30 & 6682  & 390  & 0  \\
--/- & 9  & 6091  & 1650 & 17 \\ \hline
-Summary & 46 & 8087  & 623  & 18 \\ \hline
-\end{tabular}
-\caption{Detailed performance results of the CA configuration used in the combined system. \todo{Is this needed? Should it only be included later?}}
-\label{tab:CA-detailed-performance}
-\end{table}
 
 %As \Cref{tab:UD-difference-BL500} shows an excerpt of the results achieved for the mentioned configuration, we refer to it for the discussion of this specific setting.
 %Our first observation was that the ANGA rating peaked when \textit{UP and DOWN} (\textit{U/D}) was 0.3.
@@ -713,8 +709,8 @@ The result was therefore a highly sensitive \textit{DOWN} parameter, giving a la
 
 \subsubsection{Other tolerance levels}
 Lastly, it should be pointed out that different tolerance levels for each block size was tested to see what effect adjusting it up or down had.
-In general, this resulted in worse performance, and the tolerance levels previously discussed produced the best results.
-\todo{Refer to correct attachment when it's inserted.}
+In general, this resulted in worse performance, and the previously discussed tolerance levels produced the best results.
+The results from using other tolerance levels can be found in \Cref{sec:app-other-ANGAs}.
 
 %
 %\begin{figure}[ht]
@@ -750,6 +746,7 @@ Because the trust level was already close to $T_{\text{lockout}}$, it still mana
 \end{figure}
 
 \subsection{Results}
+\label{sec:analysis-score-lvl-results}
 The performance was tested by adjusting the width of $\textit{Sig}_{\text{PA}}$, as well as the PA tolerance.
 The tolerance was added to the user's mean score from the validation set, similarly to the decision level fusion, however in this case it controlled the threshold for reward and penalty.
 Increasing the tolerance essentially shifted $\textit{Sig}_{\text{PA}}$ towards the right.
@@ -758,8 +755,8 @@ Following are the results achieved by adjusting these parameters for different b
 \subsubsection{Block size 500}
 We were able to find settings improving the ANIA rating of the original CA system also with this fusion scheme. %albeit less successfully than with decision level fusion.
 \Cref{tab:analysis-score-level-BL500} shows the performance using different $\textit{Sig}_{\textit{PA}}$ widths with blocks size 500.
-There are more results available in the attachments, however this table is focused on results where either the ANGA or ANIA is comparable to the original CA system.
-\todo{Refer directly to attachments.}
+There are more results available \Cref{sec:app-score-BL500}, however \Cref{tab:analysis-score-level-BL500} is focused on results where either the ANGA or ANIA is comparable to the original CA system.
+%\todo{Refer directly to attachments.}
 Similarly to decision level fusion, the ANGA was boosted to around 8500 when the ANIA was around the same as the CA system, being 623.
 The best widths for boosting the ANGA seemed to be 0.25 and 0.3 for our specific combination and dataset, giving 8520 and 8540 ANGA while having a lower ANIA than the CA system, as well as one less undetected imposter.
 
@@ -827,9 +824,20 @@ It gave an ANGA of 7946 and ANIA of 538, which was not as effective as the best 
 %However, the ANIA was higher than what was achieved with block size 500, and the ANGA was also lower.
 On the other hand, we saw positive results for increasing ANGA using block size 250.
 With $\text{width} = \text{0.5}$, and $\text{tolerance} = \text{0.45}$, it gave an ANGA of 8745 while having the same ANIA as the original system.
-This was the best ANGA improvement observed in the project's analysis phase, being an 18.4\% increase.
+This was the best ANGA improvement observed in the project's analysis phase, being an 8.14\% increase.
 
-%Just as with decision level fusion, we see that smaller block sizes are better at improving ANGA, while larger block sizes are better at decreasing ANIA.
+Just as with decision level fusion, we see that smaller block sizes are better at improving ANGA, while larger block sizes are better at decreasing ANIA.
+Before the analysis, we expected otherwise.
+Specifically, we expected large block sizes to be better for reducing ANIA and shorter block lengths to be better for increasing ANGA.
+Because the CA subsystem has the ability to rapidly drop imposters' trust levels and locking them out after a small amount of keystrokes. 
+Therefore, we expected large block sizes to cause the PA subsystem to kick in too seldom to significantly increase imposter detection rates, since blocks are reset every time the CA subsystem causes a lockout on its own.
+More research is needed to conclude on why larger block sizes seem better for lowering ANIA ratings.
+
+
+%best impact on the overall performance, since blocks are reset after every lockout.
+
+
+
 %Seeing this in both fusion schemes is probably no coincidence, and it raises the question of what causes such behavior.
 %Looking back at \Cref{tab:PA-block-lengths}, we can see that for smaller block sizes, the tolerance levels need to be significantly higher in order to achieve high ANGA ratings.
 %A possible reason is that the PA settings we have used have had lower FNMR than FMR in order to achieve reasonably high ANGA ratings.
@@ -842,7 +850,7 @@ We performed limited testing of block size 100 with score level fusion.
 However, we did test a number of different sigmoid widths, and the results in \Cref{tab:analysis-score-level-BL100} show that for ANGA values close to that of the CA system, it showed worse ANIA ratings for all widths.
 We were unable to find a setting with this block size which improved the CA system's performance.
 It is possible that increasing the width of $\textit{Sig}_{\text{PA}}$ is not enough to reduce the impact of inaccurate comparisons.
-More research is needed to investigate this issue. 
+This issue could be interesting to investigate further.
 Reducing the \text{height} of the sigmoid function to forcibly restrict the PA system from causing too large changes to the trust level could yield different results.
 %It is possible that due to inaccurate comparisons, the \text{height} of the sigmoid needs to be reduced, forcibly restricting the PA system from causing too large changes to the trust level.
 %More research is needed to investigate this issue.
@@ -866,17 +874,65 @@ Reducing the \text{height} of the sigmoid function to forcibly restrict the PA s
 \end{table}
 %With smaller block size, more width is needed.
 
+\section{Overview of the best results}
+\label{sec:analysis-overview-best-results}
+We conclude the analysis of detection performance by presenting an overview the best results for increasing ANGA and decreasing ANIA, both of which have been discussed in \Cref{sec:analysis-decision-lvl-results,sec:analysis-score-lvl-results}.
+Here, we can see how the users fell into different categories before and after combining the systems.
+\Cref{tab:CA-detailed-performance} shows the detailed results of the original CA system.
+When comparing it to the best result for increasing ANGA, in the upper half of \Cref{tab:best-results}, we see that the distribution of users in different categories is very similar.
+One user was moved from -/+ to +/+, which was a small but positive change.
+This means that the combined system cause one more user to never be locked out.
+While the total number of imposters not detected went up by 0.1\%, the genuine user was on average able to type 658 characters more, an increase of 8.14\%.
 
+In the lower half of \Cref{tab:best-results}, we see that the best result for decreasing ANIA showed some more changes on user categories.
+This setting also had one more user in the best category compared to the CA system.
+There were also six less users who had at least one undetected imposter, as seen in the decreases of users in the +/- and -/- categories.
+The total number of imposters who were not detected was therefore decreased, down by 7.
+This, in addition to imposters on average being able to type $\text{623}-\text{508} = 115$ less characters before being locked out, was overall a positive result.
 
-\todo{Get the laptop loop results from DB into schemas.}
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrr}
+\hline
+\textit{} Category & \#Users & ANGA & ANIA & \#Imp. ND \\ \hline
++/+ & 6  & 17409 & 269  & 0  \\
++/- & 1  & 12256 & 485  & 1  \\
+-/+ & 30 & 6682  & 390  & 0  \\
+-/- & 9  & 6091  & 1650 & 17 \\ \hline
+Summary & 46 & 8087  & 623  & 18(0.9\%) \\ \hline
+\end{tabular}
+\caption{Detailed performance results of the CA configuration used in the combined system.}
+\label{tab:CA-detailed-performance}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llrrrr}
+\hline
+\textit{} & Category & \#Users & ANGA & ANIA & \#Imp. ND \\ \hline
+\multirow{4}{*}{\textit{\begin{tabular}[c]{@{}l@{}}Score level\\ Block size 250\end{tabular}}} & +/+ & 7 & 21735 & 336 &  \\
+ & +/- & 1 & 12256 & 483 & 1 \\
+ & -/+ & 29 & 6130 & 328 &  \\
+ & -/- & 9 & 6678 & 1815 & 20 \\ \cline{2-6} 
+\textit{} & Summary & 46 & 8745 & 623 & 21(1\%) \\ \hline
+\multirow{4}{*}{\textit{\begin{tabular}[c]{@{}l@{}}Decision level\\ Block size 500\end{tabular}}} & +/+ & 7 & 21979 & 308 &  \\
+ & +/- & 0 &  &  &  \\
+ & -/+ & 35 & 5328 & 353 &  \\
+ & -/- & 4 & 7945 & 2214 & 11 \\ \cline{2-6} 
+\textit{} & Summary & 46 & 8089 & 508 & 11(0.5\%) \\ \hline
+\end{tabular}
+\caption{CA results achieved by adjusting Single Occurrence (SO) and No Occurrences (NO) parameters. DTM parameters were $A = 1.85$, $B = 0.28$, $C = 1$ and $T_{\text{lockout}} = 90$.}
+\label{tab:best-results}
+\end{table}
+
 \section{Computational impact}
 \label{sec:analysis-computational-impact}
-Regarding \textit{research sub-question 2}, we realize that computation speeds are highly dependent on a number of factors such as processing power, programming language, choice of classifier and number of considered features.
+Regarding \textit{research sub-question 1}, we realize that computation speeds are highly dependent on a number of factors such as processing power, programming language, choice of classifier and number of considered features.
 Still, we can mention that our CA system performs a comparison of a single keystroke in 0.2 milliseconds on average.
 For our PA system, the average computing time for processing blocks of 500, 250 and 100 keystrokes was 75.2, 46 and 25.7 milliseconds, respectively.
 These times were collected by finding the user with the largest reference in terms of unique mono- and digraphs, and running their validation set against their own reference.
 The systems were developed in MATLAB 2017, and were run on an Intel Core i7, on a single thread at 2.4 GHz frequency.
-While the speeds were reasonable, they could be further improved by for example using more a low-level programming language, not to mention as mention multi-threading.
+While the speeds were reasonable, they could be further improved by for example using more a low-level programming language, not to mention multi-threading.
 
 What is most interesting to discuss is the computational impact of combining the systems.
 The most important factor here is the PA subsystem's block size.

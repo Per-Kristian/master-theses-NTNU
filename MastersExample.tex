@@ -37,6 +37,7 @@
 \usepackage{cleveref}
 \usepackage[]{algorithm2e}
 \usepackage{algorithm}
+\usepackage{longtable}
 \usepackage{tikz}
 \usetikzlibrary{shapes.multipart,matrix,positioning}
 
@@ -101,13 +102,13 @@
 \begin{document}
 
 \input{inc/DaimData} % this is the file which contains all the details about your thesis
-\makefrontpages % make the frontpages
-\input{inc/mastersIntro}
-%\include{preface}
-%
-%\include{acknowledgments}
-%
-%\include{Abstract}
+%\makefrontpages % make the frontpages
+%\input{inc/mastersIntro}
+\include{inc/preface}
+
+\include{inc/acknowledgments}
+
+\include{inc/abstract}
 
 \tableofcontents
 
@@ -116,6 +117,7 @@
 % Comment with a percent to remove figures or tables:
 \listoffigures
 \listoftables
+%\lstlistoflistings
 
 
 \include{inc/introduction} % includes latex files from the same directory
@@ -123,7 +125,7 @@
 \include{inc/proposed} % could be results
 \include{inc/analysis}
 \include{inc/conclusion}
-\include{inc/future}
+%\include{inc/future}
 
 \ifthenelse{\boolean{HarvardCitations}}{%
 	\bibliographystyle{agsm} % used for Harvard style references. Names - Humanities & Interaction Design

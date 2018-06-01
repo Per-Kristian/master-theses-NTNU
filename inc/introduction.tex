@@ -65,28 +65,35 @@ Therefore, an important problem to solve is to decrease the number of keystrokes
 
 \section{Justification, motivation and benefits}
 
-By achieving positive results, this project has the potential to increase the viability of free-text keystroke dynamics in industries and sectors where a higher level of information security is needed or desired, such as the health sector or other critical infrastructures.
+This project was conducted for its potential to increase the viability of free-text keystroke dynamics in industries and sectors where a higher level of information security is needed or desired, such as the health sector or other critical infrastructures.
 This does not exclude other work environments or even private computers, as any owner of a system where security is essential could benefit from imposters being automatically detected and locked out by typing on the keyboard.
 As improving the CA system's detection performance would lead to imposters being detected more quickly while genuine users are locked out less frequently, it would result in a higher level of security and a better user experience.
 
 \section{Research questions}
 \label{research:questions}
-In this project, we will aim to answer the following research question:
+The main objective of this project was to answer the following research question:
 \begin{itemize}
-    \item \textit{Can incorporating periodic authentication methods into a continuous authentication system using keystroke dynamics significantly improve the original system's imposter detection performance?}
+    \item \textit{Can incorporating periodic authentication methods into a continuous authentication system using keystroke dynamics improve the original system's imposter detection performance?}
 \end{itemize}
-To be able to answer this research question, a number of sub-questions should also be considered.
-They can be addressed in any order, as answering one of them does not depend on already having answered the others.
-The sub-questions are as follows:
+In order to answer this research question, a couple of sub-questions were also considered.
+They are addressed throughout the different chapters of this thesis.
+%They could be addressed in any order, as answering one of them did not depend on already having answered the other.
+The sub-questions were as follows:
 \begin{enumerate}
-\item \textit{Which PA system can lead to the best results in terms of detection performance when incorporated into the CA system?} Here we want to know which PA system causes the combined system to catch the most imposters, and how fast it does so. We also want it to mistake genuine users for being imposters as rarely as possible.
-\item \textit{What is the impact on computational performance when incorporating a PA system into the CA system?} Continuous and periodic authentication systems are meant to operate transparently in the background. Therefore, we want every authentication process to be performed quickly in order to avoid slowing down the user's machine.
-\item \textit{How can the decision of the PA system be used by the CA system?} If the PA system believes the current user is an imposter, it can either remove access immediately or cause the CA system to place less trust in the user. We want to know which approach gives the best results.
+%\item \textit{Which PA system can lead to the best results in terms of detection performance when incorporated into the CA system?} Here we want to know which PA system causes the combined system to catch the most imposters, and how fast it does so. We also want it to mistake genuine users for being imposters as rarely as possible.
+\item \textit{What is the impact on computational performance when incorporating a PA system into the CA system?} Continuous and periodic authentication systems are meant to operate transparently in the background. Therefore, we wanted every authentication process to be performed quickly in order to avoid slowing down the user's machine.
+\item \textit{How can the decision of the PA system be used by the CA system?} If the PA system believes the current user is an imposter, it can either remove access immediately or cause the CA system to place less trust in the user. %We want to know which approach gives the best results.
 
 \end{enumerate}
 
-\section{Planned contributions}
-The indented contribution of this project is to implement a previously proposed CA system \cite{mondal} and extend it with a PA system with the aim of improving its detection performance.
-When implemented, the imposter detection performance of both the CA system and the combined CA/PA system will be analyzed, and the results will be presented.
-Furthermore, we will present an analysis of how the CA system's computational performance is affected by the PA extension. 
-We hope to propose a CA system that can react after every keystroke action while also utilizing statistics derived from larger keystroke samples in order to make more accurate decisions.
+\section{Contributions}
+In this project, we have developed a CA system and extended it with a PA system, improving its detection performance. %with the aim of improving its detection performance.
+%Two architectures are proposed 
+Two architectures for combining the systems are proposed.
+We also provide performance analyses of both individual systems, as well as both of the proposed architectures.
+The computational impact of combining the system is also addressed.
+The end result was a system that can react after every keystroke action while also utilizing statistics derived from larger keystroke samples in order to make more accurate decisions.
+The developed software will be delivered for continued research on this topic.
+%When implemented, the imposter detection performance of both the CA system and the combined CA/PA system will be analyzed, and the results will be presented.
+%Furthermore, we will present an analysis of how the CA system's computational performance is affected by the PA extension. 
+%We hope to propose a CA system that can react after every keystroke action while also utilizing statistics derived from larger keystroke samples in order to make more accurate decisions.

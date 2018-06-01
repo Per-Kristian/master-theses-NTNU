@@ -1,14 +1,467 @@
-\chapter{Testing Data}
-This could be a log of the testing sessions and raw data that is too long for the thesis.
-\section{Test Session 1}
-\subsection*{Objective}
-The Objective of this testing session was to test Hypothesis ....
+\chapter{PA testing data}
+\label{chap:app-PA}
+Following are results from testing the PA system which were not represented in the main thesis.
+\section{Reference cutoff impact}
+\label{sec:app-PA-reference-cutoff}
+In \Cref{tab:PA-cutoff}, we only showed a excerpt of the results from testing the impact of using a reference cutoff with block size 500. Here we present the complete version of said table.
+%To save space, only an excerpt of the results from testing the performance impact of using a reference cutoff was shown in \Cref{tab:PA-cutoff}. Here we present the complete version of said table.
 
-\subsection*{Participants}
-The participants were a convenience sample of students from NTNU. Age range $19-55$ Median age $23$ ...
+%\subsection*{Objective}
+%The Objective of this testing session was to test Hypothesis ....
+%
+%\subsection*{Participants}
+%The participants were a convenience sample of students from NTNU. Age range $19-55$ Median age $23$ ...
 
-\subsection{Raw Data}
+%\subsection{Raw Data}
+\begin{table}[htbp]
+\centering
+\begin{subtable}[h]{0.45\textwidth}
+\begin{tabular}{lrrr}
+\hline
+Toler. & FNMR & FMR & \#Imp. ND  \\ \hline
+0.001 & 51.98 & 4.20  & 2(0.1\%)    \\
+0.003 & 51.43 & 4.24  & 2(0.1\%)    \\
+0.005 & 51.15 & 4.30  & 2(0.1\%)    \\
+0.008 & 50.32 & 4.36  & 2(0.1\%)    \\
+0.02  & 47.51 & 4.68  & 2(0.1\%)    \\
+0.04  & 43.05 & 5.29  & 3(0.1\%)    \\
+0.06  & 37.75 & 5.93  & 4(0.2\%)    \\
+0.08  & 33.47 & 6.66  & 4(0.2\%)    \\
+0.1   & 30.25 & 7.47  & 4(0.2\%)    \\
+0.12  & 26.47 & 8.30  & 5(0.2\%)    \\
+0.14  & 22.97 & 9.23  & 7(0.3\%)    \\
+0.16  & 19.66 & 10.31 & 8(0.4\%)    \\
+0.18  & 17.77 & 11.48 & 9(0.4\%)    \\
+0.2   & 15.65 & 12.71 & 11(0.5\%)   \\
+0.22  & 13.40 & 14.07 & 13(0.6\%)   \\
+0.24  & 11.46 & 15.53 & 14(0.7\%)   \\
+0.26  & 9.44  & 17.11 & 17(0.8\%)   \\
+0.28  & 8.06  & 18.77 & 20(1\%)     \\
+0.3   & 6.91  & 20.52 & 22(1.1\%)   \\
+0.33  & 5.48  & 23.34 & 32(1.5\%)   \\
+0.35  & 4.70  & 25.37 & 37(1.8\%)   \\
+0.38  & 3.64  & 28.60 & 45(2.2\%)   \\
+0.4   & 2.85  & 30.80 & 54(2.6\%)   \\
+0.43  & 2.07  & 34.24 & 76(3.7\%)   \\
+0.45  & 1.80  & 36.67 & 87(4.2\%)   \\
+0.48  & 1.34  & 40.23 & 108(5.2\%)  \\
+0.5   & 1.29  & 42.61 & 121(5.8\%)  \\
+%0.9   & 0.09  & 84.67 & 925(44.7\%)
+ \end{tabular}
+ \caption{Without reference cutoff.}
+ \label{tab:app-PA-without-cutoff}
+\end{subtable}
+\hfill
+\begin{subtable}[h]{0.45\textwidth}
+\centering
+\begin{tabular}{lrrr}
+\hline
+Toler. & FNMR  & FMR & \#Imp. ND \\ \hline
+0.001 & 53.01 & 4.21  & 2(0.1\%)   \\
+0.003 & 52.38 & 4.26  & 2(0.1\%)   \\
+0.005 & 52.18 & 4.31  & 2(0.1\%)   \\
+0.008 & 51.38 & 4.38  & 2(0.1\%)   \\
+0.02  & 48.08 & 4.68  & 2(0.1\%)   \\
+0.04  & 43.35 & 5.28  & 3(0.1\%)   \\
+0.06  & 38.54 & 5.94  & 4(0.2\%)   \\
+0.08  & 33.64 & 6.68  & 4(0.2\%)   \\
+0.1   & 30.04 & 7.50  & 4(0.2\%)   \\
+0.12  & 25.77 & 8.36  & 5(0.2\%)   \\
+0.14  & 22.59 & 9.37  & 7(0.3\%)   \\
+0.16  & 19.79 & 10.51 & 8(0.4\%)   \\
+0.18  & 17.36 & 11.70 & 9(0.4\%)   \\
+0.2   & 15.19 & 12.94 & 10(0.5\%)  \\
+0.22  & 12.89 & 14.28 & 12(0.6\%)  \\
+0.24  & 11.05 & 15.81 & 14(0.7\%)  \\
+0.26  & 9.29  & 17.42 & 18(0.9\%)  \\
+0.28  & 7.57  & 19.13 & 20(1\%)    \\
+0.3   & 6.44  & 20.91 & 21(1\%)    \\
+0.33  & 4.69  & 23.80 & 31(1.5\%)  \\
+0.35  & 3.85  & 25.88 & 36(1.7\%)  \\
+0.38  & 2.76  & 29.20 & 45(2.2\%)  \\
+0.4   & 2.26  & 31.47 & 53(2.6\%)  \\
+0.43  & 1.67  & 34.98 & 73(3.5\%)  \\
+0.45  & 1.51  & 37.45 & 88(4.3\%)  \\
+0.48  & 1.21  & 41.09 & 111(5.4\%) \\
+0.5   & 1.13  & 43.55 & 126(6.1\%)
+\end{tabular}
+\caption{With reference cutoff.}
+\label{tab:app-PA-with-cutoff}
+\end{subtable}
+\caption{Complete version of \Cref{tab:PA-cutoff}.}
+\label{tab:app-PA-cutoff}
+\end{table}
 
 
 
 
+
+
+\chapter{Testing data from decision level fusion}
+\label{chap:app-decision}
+%Testing a reference to \Cref{chap:app-PA}.
+%\section{Different UP values}
+%\label{sec:app-decision-UP-values}
+%
+%\begin{table}[ht]
+%\centering
+%\begin{subtable}[h]{0.45\textwidth}
+%\begin{tabular}{lrrr}
+%\hline
+%\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+%%0     & 8944 & 706 & 25(1.2\%) \\
+%%0.2   & 8602 & 630 & 20(1\%)   \\
+%%0.4   & 8025 & 569 & 16(0.8\%) \\
+%%0.6   & 7380 & 499 & 12(0.6\%) \\
+%%0.8   & 7062 & 432 & 12(0.6\%) \\
+%%1     & 5604 & 284 & 3(0.1\%)  \\
+%%1.001 & 5239 & 273 & 2(0.1\%) THIS IS BL250 WITH 1.001 UP.
+%0     & 8547 & 644 & 19(0.9\%) \\
+%0.2   & 8545 & 605 & 18(0.9\%) \\
+%0.4   & 8263 & 564 & 15(0.7\%) \\
+%0.6   & 8089 & 508 & 11(0.5\%) \\
+%0.8   & 7676 & 445 & 8(0.4\%)  \\
+%1     & 6278 & 307 & 3(0.1\%)  \\
+%1.001 & 6019 & 299 & 3(0.1\%)  
+%\end{tabular}
+% \caption{\text{$\textit{UP}=1.001$}}
+% \label{tab:app-UD-difference-1.001}
+%\end{subtable}
+%\hfill
+%
+%\begin{subtable}[h]{0.45\textwidth}
+%\begin{tabular}{lrrr}
+%\hline
+%\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+%0     & 8547 & 644 & 19(0.9\%) \\
+%0.2   & 8545 & 605 & 18(0.9\%) \\
+%0.4   & 8263 & 564 & 15(0.7\%) \\
+%0.6   & 8089 & 508 & 11(0.5\%) \\
+%0.8   & 7676 & 445 & 8(0.4\%)  \\
+%1     & 6278 & 307 & 3(0.1\%)  \\
+%1.001 & 6019 & 299 & 3(0.1\%)
+%\end{tabular}
+% \caption{\text{$\textit{UP}=1$}}
+% \label{tab:app-UD-difference-1}
+%\end{subtable}
+%
+%
+%\begin{subtable}[h]{0.45\textwidth}
+%\begin{tabular}{lrrr}
+%\hline
+%\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+%0     & 8547 & 644 & 19(0.9\%) \\
+%0.2   & 8545 & 605 & 18(0.9\%) \\
+%0.4   & 8263 & 564 & 15(0.7\%) \\
+%0.6   & 8089 & 508 & 11(0.5\%) \\
+%0.8   & 7676 & 445 & 8(0.4\%)  \\
+%1     & 6278 & 307 & 3(0.1\%)  \\
+%1.001 & 6019 & 299 & 3(0.1\%)  
+%\end{tabular}
+% \caption{\text{$\textit{UP}=0.8$}}
+% \label{tab:app-UD-difference-0.8}
+%\end{subtable}
+%\hfill
+%
+%\begin{subtable}[h]{0.45\textwidth}
+%\begin{tabular}{lrrr}
+%\hline
+%\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+%0     & 8543 & 643 & 19(0.9\%) \\
+%0.2   & 8541 & 604 & 18(0.9\%) \\
+%0.4   & 8259 & 564 & 15(0.7\%) \\
+%0.6   & 8086 & 508 & 11(0.5\%) \\
+%0.8   & 7674 & 445 & 8(0.4\%)  \\
+%1     & 6335 & 307 & 3(0.1\%)  \\
+%1.001 & 6017 & 299 & 3(0.1\%) 
+%
+%\end{tabular}
+% \caption{\text{$\textit{UP}=0.6$}}
+% \label{tab:app-UD-difference-0.6}
+%\end{subtable}
+%
+%
+%\begin{subtable}[h]{0.45\textwidth}
+%\centering
+%\begin{tabular}{lrrr}
+%\hline
+%\textit{DOWN} & ANGA  & ANIA & \#Imp. ND  \\ \hline
+%%0     & 8936 & 690 & 25(1.2\%) \\
+%%0.2   & 8594 & 620 & 20(1\%)   \\
+%%0.4   & 8017 & 557 & 16(0.8\%) \\
+%%0.6   & 7352 & 493 & 12(0.6\%) \\
+%%0.8   & 7068 & 426 & 12(0.6\%) \\
+%%1     & 5607 & 282 & 3(0.1\%)  \\
+%%1.001 & 5223 & 270 & 2(0.1\%) THIS IS BL250 WITH 0.4 UP
+%0     & 8543 & 642 & 19(0.9\%) \\
+%0.2   & 8541 & 603 & 18(0.9\%) \\
+%0.4   & 8261 & 563 & 15(0.7\%) \\
+%0.6   & 8088 & 507 & 11(0.5\%) \\
+%0.8   & 7676 & 444 & 8(0.4\%)  \\
+%1     & 6366 & 306 & 3(0.1\%)  \\
+%1.001 & 6018 & 298 & 3(0.1\%)  
+% \end{tabular}
+%\caption{$\textit{UP} = 0.4$}
+%\label{tab:app-UD-difference-0.4}
+%\end{subtable}
+%
+%\hfill
+%
+%\begin{subtable}[h]{0.45\textwidth}
+%\centering
+%\begin{tabular}{lrrr}
+%\hline
+%\textit{DOWN} & ANGA  & ANIA & \#Imp. ND  \\ \hline
+%0     & 8134 & 638 & 19(0.9\%) \\
+%0.2   & 8132 & 599 & 18(0.9\%) \\
+%0.4   & 7850 & 558 & 15(0.7\%) \\
+%0.6   & 7676 & 503 & 11(0.5\%) \\
+%0.8   & 7264 & 441 & 8(0.4\%)  \\
+%1     & 5869 & 304 & 3(0.1\%)  \\
+%1.001 & 5612 & 296 & 3(0.1\%)  
+% \end{tabular}
+%\caption{$\textit{UP} = 0.2$}
+%\label{tab:app-UD-difference-0.2}
+%\end{subtable}
+%
+%\caption{Differences in performance when adjusting \textit{DOWN} parameter for different \textit{UP} values. Block size was 500 and PA tolerance was 0.33.}
+%\label{tab:app-UD-difference}
+%\end{table}
+
+\section{Other PA tolerance levels}
+\label{sec:app-other-ANGAs}
+Different PA tolerance levels were tested for the different block lengths when testing the decision level fusion.
+Below are the resulting performance ratings when using tolerance levels other than those covered in \Cref{sec:analysis-decision-lvl-results}.
+
+\begin{table}[ht]
+\centering
+\begin{subtable}[h]{0.45\textwidth}
+\begin{tabular}{lrrr}
+\hline
+\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+0.1   & 8550 & 648 & 20(1\%)   \\
+0.2   & 8550 & 628 & 20(1\%)   \\
+0.4   & 8436 & 590 & 17(0.8\%) \\
+0.6   & 8325 & 535 & 13(0.6\%) \\
+0.7   & 8057 & 510 & 10(0.5\%) \\
+%0.75  & 8002 & 500 & 10(0.5\%) \\
+0.8   & 7976 & 481 & 10(0.5\%) \\
+1     & 7690 & 354 & 3(0.1\%)  \\
+1.001 & 7543 & 345 & 3(0.1\%)
+
+\end{tabular}
+ \caption{$\text{PA tolerance} = 0.4$, \text{$\textit{UP}=1.001$}. PA subsystem's ANGA was 22130 and ANIA was 730.}
+ \label{tab:app-BL500-tol-0.4}
+\end{subtable}
+\hfill
+\begin{subtable}[h]{0.45\textwidth}
+\centering
+\begin{tabular}{lrrr}
+\hline
+\textit{DOWN} & ANGA  & ANIA & \#Imp. ND  \\ \hline
+0.1   & 8460 & 611 & 18(0.9\%) \\
+0.2   & 8458 & 591 & 18(0.9\%) \\
+0.4   & 7932 & 543 & 14(0.7\%) \\
+0.6   & 7432 & 474 & 8(0.4\%)  \\
+0.8   & 7009 & 392 & 5(0.2\%)  \\
+1     & 4211 & 265 & 2(0.1\%)  \\
+1.001 & 2936 & 256 & 2(0.1\%) 
+
+ \end{tabular}
+ \caption{$\text{PA tolerance} = 0.22$, \text{$\textit{UP}=1.001$}. PA subsystem's ANGA was 3880 and ANIA was 583.}
+\label{tab:app-BL500-tol-0.22}
+\end{subtable}
+
+\caption{Other PA tolerance levels with block size 500}
+\label{tab:app-BL500-diffANGAs}
+\end{table}
+
+
+
+\begin{table}[ht]
+\centering
+\begin{subtable}[h]{0.45\textwidth}
+\begin{tabular}{lrrr}
+\hline
+\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+0.2   & 8812 & 655 & 22(1.1\%) \\
+0.4   & 8293 & 606 & 18(0.9\%) \\
+0.6   & 7544 & 555 & 15(0.7\%) \\
+0.8   & 7263 & 486 & 13(0.6\%) \\
+1.001 & 6560 & 348 & 4(0.2\%) 
+
+\end{tabular}
+ \caption{$\text{PA tolerance} = 0.5$, \text{$\textit{UP}=0.4$}. PA subsystem's ANGA was 12634 and ANIA was 476.}
+ \label{tab:app-BL250-tol-0.5}
+\end{subtable}
+\hfill
+\begin{subtable}[h]{0.45\textwidth}
+\centering
+\begin{tabular}{lrrr}
+\hline
+\textit{DOWN} & ANGA  & ANIA & \#Imp. ND  \\ \hline
+0.1   & 8388 & 594 & 18(0.9\%) \\
+0.2   & 7963 & 548 & 15(0.7\%) \\
+0.4   & 6859 & 459 & 8(0.4\%)  \\
+0.6   & 6385 & 369 & 5(0.2\%)  \\
+0.8   & 4933 & 291 & 4(0.2\%)  \\
+1     & 1152 & 173 & 1(0\%)    \\
+1.001 & 872  & 167 & 1(0\%) 
+ \end{tabular}
+ \caption{$\text{PA tolerance} = 0.14$, \text{$\textit{UP}=1.001$}. PA subsystem's ANGA was 993 and ANIA was 282.}
+\label{tab:app-BL250-tol-0.14}
+\end{subtable}
+
+\caption{Other PA tolerance levels with block size 250}
+\label{tab:app-BL250-diffANGAs}
+\end{table}
+
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrr}
+\hline
+\textit{DOWN} & ANGA  & ANIA & \#Imp. ND \\ \hline
+0.1   & 9554 & 886 & 41(2\%)   \\
+0.2   & 9128 & 782 & 33(1.6\%) \\
+0.4   & 7568 & 609 & 23(1.1\%) \\
+0.6   & 7174 & 447 & 13(0.6\%) \\
+0.8   & 5335 & 320 & 6(0.3\%)  \\
+1     & 3030 & 197 & 1(0\%)    \\
+1.001 & 2151 & 189 & 0(0\%)  
+\end{tabular}
+\caption{PA tolerance level 0.4 with block size 100. PA subsystem's ANGA was 1539 and ANIA was 173.}
+\label{tab:app-BL100-diffANGAs}
+\end{table}
+
+\chapter{Testing data from score level fusion}
+\label{chap:app-score}
+Here, we show all results from testing the score level fusion. 
+The results are categorized by block sizes, and the following tables are extensions of the tables displayed in \Cref{sec:analysis-score-lvl-results}.
+
+\section{Block size 500}
+\label{sec:app-score-BL500}
+
+\begin{center}
+\begin{longtable}{llrrr}
+\caption[Complete version of \Cref{tab:analysis-score-level-BL500}.]{Complete version of \Cref{tab:analysis-score-level-BL500}.} \label{tab:app-score-BL500} \\
+
+\hline \multicolumn{1}{l}{\textbf{Width}} & \multicolumn{1}{l}{\textbf{Toler.}} & \multicolumn{1}{r}{\textbf{ANGA}} & \multicolumn{1}{r}{\textbf{ANIA}} & \multicolumn{1}{r}{\textbf{\#Imp. ND}} \\ \hline 
+%\hline
+%\textbf{Width} & \textbf{Toler.} & \textbf{ANGA} & \textbf{ANIA} & \textbf{\#Imp. ND}
+%\hline
+\endfirsthead
+
+\multicolumn{5}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+%\hline \multicolumn{1}{|c|}{\textbf{Time (s)}} &
+%\multicolumn{1}{c|}{\textbf{Triple chosen}} &
+%\multicolumn{1}{c|}{\textbf{Other feasible triples}} \\ \hline 
+\hline \multicolumn{1}{l}{\textbf{Width}} & \multicolumn{1}{l}{\textbf{Toler.}} & \multicolumn{1}{r}{\textbf{ANGA}} & \multicolumn{1}{r}{\textbf{ANIA}} & \multicolumn{1}{r}{\textbf{\#Imp. ND}} \\ \hline
+\endhead
+
+\hline \multicolumn{5}{|r|}{{Continued on next page}} \\ \hline
+\endfoot
+
+\hline \hline
+\endlastfoot
+
+%\multirow{6}{*}{0.05} 
+0.05 & 0.4   & 7936 & 449 & 9(0.4\%)  \\
+                      & 0.5   & 8026 & 510 & 12(0.6\%) \\
+                      & 0.55  & 8097 & 539 & 13(0.6\%) \\
+                      & 0.6   & 8212 & 572 & 13(0.6\%) \\
+                      & 0.7   & 8550 & 631 & 18(0.9\%) \\
+                      & 0.8   & 8550 & 670 & 22(1.1\%) \\ \hline
+%\multirow{9}{*}{0.1}  
+ 0.1                       & 0     & 5424 & 285 & 3(0.1\%)  \\
+                      & 0.1   & 6186 & 333 & 4(0.2\%)  \\
+                      & 0.2   & 7446 & 394 & 7(0.3\%)  \\
+                      & 0.3   & 7746 & 440 & 9(0.4\%)  \\
+                      & 0.4   & 7996 & 494 & 11(0.5\%) \\
+                      & 0.5   & 8094 & 560 & 13(0.6\%) \\
+                      & 0.6   & 8497 & 611 & 15(0.7\%) \\
+                      & 0.7   & 8550 & 660 & 22(1.1\%) \\
+                      & 0.8   & 8550 & 678 & 22(1.1\%) \\ \hline
+%\multirow{9}{*}{0.15} 
+                       0.15 & 0     & 6188 & 340 & 4(0.2\%)  \\
+                      & 0.1   & 6805 & 385 & 5(0.2\%)  \\
+                      & 0.2   & 7558 & 434 & 8(0.4\%)  \\
+                      & 0.3   & 7949 & 478 & 10(0.5\%) \\
+                      & 0.4   & 8014 & 527 & 11(0.5\%) \\
+                      & 0.5   & 8087 & 590 & 15(0.7\%) \\
+                      & 0.6   & 8548 & 637 & 20(1\%)   \\
+                      & 0.7   & 8550 & 667 & 22(1.1\%) \\
+                      & 0.8   & 8550 & 683 & 22(1.1\%) \\ \hline
+%\multirow{9}{*}{0.2}
+                        0.2 & 0     & 6376 & 380 & 5(0.2\%)  \\
+                      & 0.1   & 6963 & 421 & 6(0.3\%)  \\
+                      & 0.2   & 7665 & 468 & 10(0.5\%) \\
+                      & 0.3   & 7919 & 509 & 11(0.5\%) \\
+                      & 0.4   & 8067 & 550 & 11(0.5\%) \\
+                      & 0.5   & 8487 & 614 & 19(0.9\%) \\
+                      & 0.6   & 8544 & 645 & 20(1\%)   \\
+                      & 0.7   & 8550 & 670 & 22(1.1\%) \\
+                      & 0.8   & 8550 & 684 & 23(1.1\%) \\ \hline
+%\multirow{9}{*}{0.25} 
+                    0.25 & 0     & 6667 & 419 & 6(0.3\%)  \\
+                      & 0.1   & 7258 & 449 & 8(0.4\%)  \\
+                      & 0.2   & 7355 & 496 & 11(0.5\%) \\
+                      & 0.3   & 7892 & 527 & 11(0.5\%) \\
+                      & 0.4   & 8352 & 575 & 14(0.7\%) \\
+                      & 0.5   & 8540 & 614 & 17(0.8\%) \\
+                      & 0.6   & 8544 & 652 & 20(1\%)   \\
+                      & 0.7   & 8544 & 673 & 22(1.1\%) \\
+                      & 0.8   & 8554 & 682 & 23(1.1\%) \\ \hline
+%\multirow{12}{*}{0.3}
+                    0.3 & 0     & 6763 & 443 & 8(0.4\%)  \\
+                      & 0.1   & 7178 & 472 & 9(0.4\%)  \\
+                      & 0.2   & 7410 & 512 & 11(0.5\%) \\
+                      & 0.25  & 7943 & 529 & 11(0.5\%) \\
+                      & 0.265 & 8158 & 534 & 11(0.5\%) \\
+                      & 0.28  & 8160 & 540 & 11(0.5\%) \\
+                      & 0.3   & 8160 & 546 & 12(0.6\%) \\
+                      & 0.4   & 8447 & 583 & 16(0.8\%) \\
+                      & 0.5   & 8520 & 613 & 17(0.8\%) \\
+                      & 0.6   & 8544 & 655 & 21(1\%)   \\
+                      & 0.7   & 8544 & 670 & 21(1\%)   \\
+                      & 0.8   & 8548 & 682 & 23(1.1\%) \\ \hline
+%\multirow{9}{*}{0.35}
+                    0.35 & 0     & 7005 & 461 & 8(0.4\%)  \\
+                      & 0.1   & 7279 & 498 & 10(0.5\%) \\
+                      & 0.2   & 7860 & 528 & 11(0.5\%) \\
+                      & 0.3   & 8214 & 558 & 14(0.7\%) \\
+                      & 0.4   & 8497 & 588 & 16(0.8\%) \\
+                      & 0.5   & 8520 & 618 & 17(0.8\%) \\
+                      & 0.6   & 8540 & 656 & 21(1\%)   \\
+                      & 0.7   & 8544 & 672 & 22(1.1\%) \\
+                      & 0.8   & 8548 & 681 & 23(1.1\%) \\ \hline
+%\multirow{9}{*}{0.4}  
+                    0.4 & 0     & 7268 & 482 & 9(0.4\%)  \\
+                      & 0.1   & 7582 & 512 & 10(0.5\%) \\
+                      & 0.2   & 7882 & 544 & 13(0.6\%) \\
+                      & 0.3   & 8214 & 566 & 15(0.7\%) \\
+                      & 0.4   & 8429 & 596 & 16(0.8\%) \\
+                      & 0.5   & 8500 & 620 & 17(0.8\%) \\
+                      & 0.6   & 8520 & 655 & 21(1\%)   \\
+                      & 0.7   & 8547 & 673 & 22(1.1\%) \\
+                      & 0.8   & 8547 & 681 & 23(1.1\%) \\ \hline
+%\multirow{9}{*}{0.45}
+                        0.45 & 0     & 7273 & 500 & 10(0.5\%) \\
+                      & 0.1   & 7584 & 522 & 11(0.5\%) \\
+                      & 0.2   & 7914 & 552 & 14(0.7\%) \\
+                      & 0.3   & 8382 & 575 & 16(0.8\%) \\
+                      & 0.4   & 8428 & 597 & 16(0.8\%) \\
+                      & 0.5   & 8500 & 621 & 18(0.9\%) \\
+                      & 0.6   & 8520 & 646 & 19(0.9\%) \\
+                      & 0.7   & 8547 & 672 & 22(1.1\%) \\
+                      & 0.8   & 8547 & 680 & 23(1.1\%) \\ \hline
+%\multirow{5}{*}{0.65}
+                    0.65 & 0.3   & 8085 & 587 & 16(0.8\%) \\
+                      & 0.4   & 8399 & 609 & 17(0.8\%) \\
+                      & 0.5   & 8432 & 629 & 18(0.9\%) \\
+                      & 0.7   & 8504 & 654 & 20(1\%)   \\
+                      & 0.9   & 8547 & 683 & 23(1.1\%)
+\end{longtable}
+\end{center}

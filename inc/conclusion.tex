@@ -1,12 +1,66 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
-\todo{Future work: whenever the CA system locks out the user, let the PA system kick in earlier than usual to see if it agrees with the PA system.}
-\todo{Score level fusion is less predictable than decision level fusion when it comes to adjusting parameters. More research is needed to find more predictable ways to adjust score level parameters.}
-This is where you provide an overview of the thesis now that it is finished.  What are the critical things that can be learnt from the thesis for the reader.
+Throughout the work of this thesis, we have investigated the possibility of combining continuous and periodic authentication in biometric systems using keystroke dynamics.
+Our approach was to develop a CA system and a PA system, both with foundations based on designs from literature, and having them cooperate to detect imposters.
+The CA system, which evaluated the user's typing behavior after every keystroke, had the ability to lock out imposters after only a few keystrokes and worked as the base system.
+The PA system would wait until enough keystrokes were recorded to fill a block of a certain length, so that it could utilize statistical data for evaluating the typing behavior.
+It would then feed information to the CA system, influencing its trust in the current user's genuineness.
 
-This is additional text.
+Two system architectures were proposed, both showing promising results.
+The main difference between them lied in the information that was passed from the PA system to the CA system.
+The first architecture was a decision level fusion scheme, and had the PA system make independent decisions, producing a Match or Non-Match result per probe block.
+This decision was then used to change the trust level by a fixed amount.
+The second architecture was a score level fusion scheme, where the PA system did not attempt to make any decision on whether or not the current user was genuine, but rather just sent a comparison score to the CA system.
+That score was then used to influence the trust level in a more dynamic manner than the first architecture.
+
+Using an existing dataset of 46 users where keystroke data was recorded in the background in an uncontrolled environment, testing was performed using three different block lengths for the PA subsystem.
+Results showed that incorporating the PA system into the CA system allowed for quite large adjustments to the general strictness of the system.
+For settings giving the same ANIA rating as the original CA system, the best result for increasing ANGA was found with the score level fusion scheme at 250 keystroke block length.
+It gave an 8.14\% improvement in the amount of keystrokes a user could type on average before being wrongfully locked out.
+When configuring the combined system to have a similar ANGA rating to the CA system, the decision level fusion scheme with block length 500 gave the best result for decreasing ANIA.
+It was able to cut down the average number of keystrokes that imposters could type by 18.46\%.
+We find that these results support our main research question regarding whether the performance of a CA system can be improved by incorporating a PA system.
+
+
+%This was done in hopes of improving the ANGA and/or ANIA rates of 
+
+%The result was a system that..
+
+%Our approach was to CA system based on a previously proposed architecture \cite{mondal} which evaluated the user's typing behavior by adjusting the system's trust in the user's genuineness after every keystroke.
 
 \section{Future Work}
 \label{sec:future}
-Maybe n-graph prediction would make smaller block sizes more viable?
-Genetic algorithm for finding optimal U/D values.
+There are a number of areas we would like to see further researched, both to resolve limitations of our own work, as well as taking this topic into new directions.
+Firstly, since we wanted to see how different parameters to our systems impacted performance, we had to manually test a large number of configurations, using the full dataset for each test.
+We prioritized seeing these effects over attempting to find the optimal settings.
+As there is an unfathomable amount of possible combinations of parameters, especially for the score level fusion, we were unable to test them all.
+The tests we performed indicated that the two fusion schemes were able to give quite similar improvements to performance.
+Therefore, we were unable to conclude which of the two architectures were the best overall.
+It would therefore be interesting to test the systems where they are customized automatically for each user by utilizing an optimization algorithm.
+We would also like to see if combining CA and PA systems with state-of-the-art detection performances would differ largely from our results.
+
+Another issue is that we have only tested zero-effort attacks, which is a common limitation throughout most of the literature on CA/PA using keystroke dynamics.
+It is unclear how our results would be affected if imposters were actively trying to mimic the typing behavior of genuine users.
+It would be interesting to test our individual systems as well as the combined system using a dataset where such attacks are available.
+Also, running tests where genuine user and imposter data is mixed could also give a more realistic attack scenario.
+We could then simulate the genuine user leaving their workstation in the middle of a block, and an imposter taking control from that point.
+This would make it harder for the PA subsystem to detect the imposter.
+
+There are a few variations to the PA subsystem we would like to explore.
+One of them is using a \textit{sliding window} when analyzing blocks, where it would not wait until an entire new block had been filled since the last time it kicked in.
+For example, with a block size of 500, after having influenced the trust level once, it could kick in again after 150 keystrokes.
+Then, the new block would be the last 350 keystrokes from the previous block plus the new 150 keystrokes.
+The other variation could be to have the PA system kick in whenever the CA subsystem brings the trust level below the threshold, to see if it agrees before a final decision is made.
+These two variations could also be combined.
+It is however worth mentioning that these solutions would increase computational impact as they would cause the PA system to kick in at higher rates.
+
+Lastly, we would like to test our proposed architectures with systems using other biometric characteristics where continuous and periodic authentication is applicable.
+An example could be extending an existing CA system for mouse dynamics \cite{mouse-dynamics} with a PA system, or even a combination of mouse and keystroke dynamics \cite{mouse-keystroke-dynamics}.
+Gait or voice recognition could also be viable options to explore.
+
+
+%Maybe n-graph prediction would make smaller block sizes more viable?
+%Genetic algorithm for finding optimal U/D values.
+%\todo{Future work: whenever the CA system locks out the user, let the PA system kick in earlier than usual to see if it agrees with the PA system.}
+%\todo{Sliding window?}
+%\todo{Mixing genuine keystrokes and imposter keystrokes to make it harder for the PA system, simulating the genuine user leaving the computer in the middle of a block.}

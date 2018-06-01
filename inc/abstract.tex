@@ -4,9 +4,10 @@ If the imposter also has malicious intentions, the genuine user could face serio
 Keystroke dynamics enables the system to repeatedly authenticate the user in the background by recognizing their personal typing pattern.
 Seen from another perspective, the system can lock the imposter out based on detecting unfamiliar typing patterns.
 
-This project aims to combine two such authentication mechanism, namely \textit{continuous} and \textit{periodic} authentication. 
+The aim of this project was to combine two such authentication mechanism, namely \textit{continuous} and \textit{periodic} authentication. 
 Continuous authentication (CA) systems react to every single keystroke action performed by the user, though such systems base their decisions on very limited amounts of information derived from a couple of keystrokes at a time.
 Periodic authentication (PA) systems base their decisions on statistics from samples containing a large number of keystrokes, however, they only perform checks after that large number of keystrokes has been collected.
 This gives the imposter a certain period of freedom before being locked out.
-By integrating a PA system into a CA system, the goal is to eliminate the disadvantages of both authentication mechanisms while still benefiting from their advantages, in addition to improving the CA system's detection performance.
+By integrating a PA system into a CA system, we eliminated the disadvantages of both authentication mechanisms while still benefiting from their advantages, in addition to improving the CA system's imposter detection performance by over 18\%.
+Alternatively, the combination of the systems could give the genuine user an increase in the average number of keystrokes before being wrongfully locked out by over 8\%.
 \hypersetup{pageanchor=false}

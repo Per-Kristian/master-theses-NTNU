@@ -73,13 +73,13 @@ We also use \textit{dissimilarity scores} instead of \textit{similarity scores}.
 Still, the general architecture remains similar, and is depicted in \Cref{fig:CA-diagram}.
 Features are extracted from the raw keystroke data in the dataset.
 The training portion of the dataset is used to build the user's reference. 
-The users' testing data is compared against their own and other users' references by the Keystroke Comparison Module.
+The users' testing data is compared againsttheir own and other users' references by the Keystroke Comparison Module.
 From these comparisons, comparison scores are produced, and are used as input for the Dynamic Trust Model (DTM), as described in \Cref{sec:related-CA}.
 Another optional input for the DTM is a set of personal parameters, which can be calculated using the genuine user's validation data.
 Based on the new trust level produced by the DTM, the Decision Module decides whether the current user should be allowed to continue or be locked out.
 The following subsections describe the CA system's architecture, as well as our implementation.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/CA-diagram.pdf}
     \caption{Generalized diagram of the CA system's structure.}
@@ -349,7 +349,7 @@ When comparing for instance monographs, the system would regard durations as \te
 Using standard deviation instead of a fixed threshold would be a viable option, but the fixed threshold allows comparison between monographs with only one occurrence.
 
 Gunetti and Picardi \cite{gnp} used 1.25 as the threshold for similarity, after testing different thresholds on a subset of their users.
-While another threshold may be optimal for our dataset, we have also decided to use 1.25 for our system, as achieving an optimal PA or CA performance is not the purpose of this project.
+While another threshold may be optimal for our dataset, we have also decided to use 1.25 for our system, as achieving an optimal PA or CA performance was not the purpose of this project.
 The A-distance between a probe and reference for a duration or latency $X$ of an n-graph is defined as follows: \begin{equation*}
     A_X = 1-\frac{\text{number of similar $X$-graphs}}{\text{number of shared $X$-graphs}}
 \end{equation*}
@@ -396,7 +396,7 @@ If the trust level is brought below the CA subsystem's lockout threshold before 
 When the user logs back in, the process starts over and the PA subsystem begins waiting for a new block to be filled, starting from the first key pressed after log-in.
 When testing the performance of our systems, this was simulated by resetting the trust level to its maximum after having dipped below the lockout threshold.
 If the amount of recorded keystrokes evaluated reaches the PA subsystem's block size without being locked out by the CA subsystem, periodic verification is initiated.
-The PA subsystem then processes the block of keystrokes as described in \cref{sec:system-design-PA}.
+The PA subsystem then processes the block of keystrokes as described in \Cref{sec:system-design-PA}.
 When having constructed a probe from the block sample and evaluated it, the result influences current trust level.
 This means that the PA system can not directly lock out the user on its own, but rather does so \textit{indirectly} by lowering the trust level, which in turn can cause a lockout.
 

@@ -521,7 +521,7 @@ Use $\backslash$setthesisyear\{<year>\} to set year.
 		}
 	\newcommand\nmt@IIK{
 			Department of Information Security and Communication Technology\\
-		\NTNU, 
+		\NTNU 
 		}
 	\newcommand\nmt@ID{
 			Department of Interaction Design\\
